@@ -31,14 +31,9 @@ void draw() {
       PVector currentHandPos = h.getPosition();
       
       if (wasGrabbing) {
-        // Calculate derivative of hand position (velocity vector)
         PVector handVelocity = PVector.sub(currentHandPos, lastHandPos);
-        
-        // Calculate radius vector from wheel center to hand
         PVector radiusVector = PVector.sub(currentHandPos, wheelCenter);
         
-        // Calculate angular velocity contribution using cross product logic
-        // This extracts the tangential component of the movement
         // Angular Change = (r x v) / r^2
         float crossProduct = radiusVector.x * handVelocity.y - radiusVector.y * handVelocity.x;
         float distSq = radiusVector.magSq();
@@ -47,11 +42,9 @@ void draw() {
         if (distSq > 500) {
            float angularChange = crossProduct / distSq;
            steeringAngle += angularChange;
-           wheelVelocity = angularChange; // Transfer momentum
+           wheelVelocity = angularChange;
         }
       }
-      
-      // Update history
       lastHandPos = currentHandPos.copy();
     }
   }
@@ -61,7 +54,7 @@ void draw() {
   // Apply Physics (Inertia & Friction) when not grabbing
   if (!isGrabbing) {
     steeringAngle += wheelVelocity;
-    wheelVelocity *= 0.95; // Friction
+    wheelVelocity *= 0.95;
   }
   
   drawSteeringWheel(isGrabbing, wheelX, wheelY);

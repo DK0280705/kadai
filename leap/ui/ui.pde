@@ -1,16 +1,14 @@
 import de.voidplus.leapmotion.*;
-
-// Line-art cards controlled with Leap Motion swipes and key-taps.
 LeapMotion leap;
 ArrayList<Card> cards;
-float railOffset;      // horizontal offset for the whole rail
-float railVelocity;    // inertial velocity applied from swipe gestures
-float railAccel;       // acceleration applied each frame
+float railOffset;
+float railVelocity;
+float railAccel;
 float railMinOffset;
 float railMaxOffset;
-int lastMillis;        // for delta-time integration
-int lastClickMillis;   // debounce hand-movement click
-PVector lastPointer;   // track prior hand position for gesture detection
+int lastMillis;
+int lastClickMillis;
+PVector lastPointer;
 
 void setup() {
   size(1000, 650, P3D);
@@ -44,12 +42,11 @@ void draw() {
   lastMillis = now;
 
   // Simple acceleration-based physics with drag, edge spring, and center snap.
-  float drag = 5.0;            // higher = quicker slow-down
-  float spring = 40.0;         // edge stiffness when pulled past bounds
-  float snap = 20.0;            // center snap velocity gain when almost stopped
+  float drag = 5.0;
+  float spring = 40.0;
+  float snap = 20.0;
   railAccel = -railVelocity * drag;
 
-  // Edge spring to keep the rail feeling grounded.
   if (railOffset < railMinOffset) {
     railAccel += (railMinOffset - railOffset) * spring - railVelocity * (drag * 0.5);
   } else if (railOffset > railMaxOffset) {
@@ -69,8 +66,8 @@ void draw() {
     }
   }
   float d = targetOffset - railOffset;
-  float desiredVel = d * snap; // proportional steering toward center
-  float blend = 1.0 - exp(-6.0 * dt); // smooth, dt-aware blend
+  float desiredVel = d * snap;
+  float blend = 1.0 - exp(-6.0 * dt);
   railVelocity = lerp(railVelocity, desiredVel, blend);
 
   railVelocity += railAccel * dt;
@@ -88,7 +85,6 @@ void draw() {
     c.draw(railOffset);
   }
 
-  // Hand movement click: quick forward or downward thrust triggers click on hovered card.
   if (activeHand != null && pointer != null && hovered != null) {
     if (lastPointer == null) {
       lastPointer = pointer.copy();
@@ -148,7 +144,6 @@ class Card {
 
   void update() {
     scaleFactor = lerp(scaleFactor, targetScale, 0.18);
-    // Nudge back to neutral after click completes.
     if (abs(scaleFactor - targetScale) < 0.01 && targetScale < 1.0) {
       targetScale = 1.0;
     }
