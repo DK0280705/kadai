@@ -3,6 +3,7 @@ Capture cam;
 PImage inImg;
 PImage outImg;
 color target = #FF0000;
+int posX, posY;
 
 // 初期設定 
 void setup() { 
@@ -14,7 +15,7 @@ void setup() {
     exit();
   }
 
-  outImg = loadImage("test.png");
+  outImg = loadImage("test.jpg");
 
   cam = new Capture(this, settings[0]);
   cam.start();
@@ -46,7 +47,7 @@ void draw() {
       float tg = green(target);
       float tb = blue(target);
       float dist = dist(r, g, b, tr, tg, tb);
-      if (dist < 50) {
+      if (dist < 20) {
         if (x < xmin) {
           xmin = x;
         }
@@ -63,9 +64,12 @@ void draw() {
     } 
   }
   inImg.updatePixels();
+
+  posX = width/2 - inImg.width/2;
+  posY = height/2 - inImg.height/2;
  
   pushMatrix();
-  translate(width/2 - inImg.width/2, height/2 - inImg.height/2);
+  translate(posX, posY);
   image(inImg, 0, 0);
 
   stroke(255, 255, 0);
@@ -82,14 +86,19 @@ void draw() {
   }  
   popMatrix();
 
+  if (mouseX < posX || mouseX >= posX + inImg.width || mouseY < posY || mouseY >= posY + inImg.height) {
+    return;
+  }
   // Display mouse pointer and its pixel color in text
-  loadPixels();
-  int i = mouseY * width + mouseX;
-  text("Mouse: (" + mouseX + ", " + mouseY + ")\nColor: #" + hex(pixels[i], 6), mouseX, mouseY + 10);
+  int i = (mouseY - posY) * inImg.width + (mouseX - posX); 
+  
+  text("Mouse: (" + mouseX + ", " + mouseY + ")\nColor: #" + hex(inImg.pixels[i], 6), mouseX, mouseY + 10);
 }
 
 void mousePressed() {
-  loadPixels();
-  int i = mouseY * width + mouseX; 
-  target = pixels[i];
+  if (mouseX < posX || mouseX >= posX + inImg.width || mouseY < posY || mouseY >= posY + inImg.height) {
+    return;
+  }
+  int i = (mouseY - posY) * inImg.width + (mouseX - posX); 
+  target = inImg.pixels[i];
 }

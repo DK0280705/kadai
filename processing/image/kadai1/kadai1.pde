@@ -11,11 +11,8 @@ void setup () {
   surface.setResizable(true);
 } 
  
-// メインルーチン 
 void draw() {
   background (160, 255, 255); // 背景を水色にする
-  // Get mouse pointer location
-
   switch (currentImageId) {
     case 1:
       image(img1, mouseX - img1.width/2, mouseY - img1.height/2);      // 画像を x=100, y=50 の位置に描く 

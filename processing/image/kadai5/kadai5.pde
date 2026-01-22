@@ -1,20 +1,15 @@
 PImage inImg;
 PImage outImg;
-
-// マウスの x 座標に応じて緑成分が減るように実装
 void setup() {
   size(800, 600, P3D);
   inImg = loadImage("test.png");
   surface.setResizable(true);
 }
-
 void draw() {
   background(0);
-
   if (inImg.width > width/2 || inImg.height > height/2) { 
     inImg.resize(inImg.width/2, inImg.height/2);
   }
-
   outImg = createImage(inImg.width, inImg.height, RGB);
   for (int y = 0; y < inImg.height; y++) {       
     for (int x = 0; x < inImg.width - 1; x++) { 
