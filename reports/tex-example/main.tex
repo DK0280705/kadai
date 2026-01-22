@@ -1,0 +1,587 @@
+%% ============================================================
+%% School Report Template (Japanese / LuaLaTeX)
+%% Compile with: lualatex main.tex  or  latexmk main.tex
+%%
+%% \documentclass[options]{class} is always the first command.
+%% '12pt' sets the base font size; 'a4paper' sets the paper size.
+%% 'ltjsarticle' is the LuaLaTeX Japanese article document class.
+%% ============================================================
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+%% ------------------------------------------------------------
+%% Package Imports
+%% \usepackage[options]{name} loads a package from the preamble.
+%% Packages extend LaTeX — fonts, colors, math, figures, tables…
+%% ------------------------------------------------------------
+%% Latin Modern: freely scalable version of Computer Modern.
+%% Prevents "Font ... not available, size <X> substituted" warnings
+%% that pgfplots can trigger when computing tiny axis-label sizes.
+\usepackage{lmodern}
+%% Japanese font setup — change the option to match your system.
+%%   Options: [noto-otf], [ipaex], [hiragino-pron], [kozuka-pr6n]
+%%   No option → use the system default font
+\usepackage{luatexja-preset}
+
+%% Page layout — 'geometry' sets margins directly (top/bottom/left/right)
+\usepackage[top=30mm, bottom=25mm, left=25mm, right=25mm]{geometry}
+
+%% Color — 'svgnames' unlocks named colors like SteelBlue, Coral; 'table' colors table rows
+\usepackage[svgnames,table]{xcolor}
+
+%% Image inclusion — provides \includegraphics[width=...]{file}
+\usepackage{graphicx}
+
+%% TikZ / pgfplots — draw vector diagrams and data charts inline in LaTeX
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%% Source code — use \lstinputlisting{file} or lstlisting environment for highlighted code
+\usepackage{listings}
+
+%% Hyperlinks — makes ToC entries, \ref, \cite, and \url clickable in the PDF
+\usepackage{hyperref}
+
+%% Header and footer customization (configured in the Page Style section below)
+\usepackage{fancyhdr}
+
+%% Captions and sub-figures — sub-figures are labeled (a), (b), … automatically
+%% 'format=hang' + explicit options suppress the "unknown document class" warning
+%% that caption produces when it doesn't recognise ltjsarticle.
+\usepackage[format=hang, font=small, labelfont=bf]{caption}
+\usepackage{subcaption}
+
+%% Mathematics — amsmath adds equation/align environments; amssymb adds ∀, ∈, ℝ, etc.
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% Professional table rules — \toprule, \midrule, \bottomrule instead of \hline
+\usepackage{booktabs}
+
+%% URL
+\usepackage{url}
+
+%% List customization — control bullet/numbered list labels, spacing, and indentation
+\usepackage{enumitem}
+
+%% ------------------------------------------------------------
+%% Source Code Block Appearance
+%% \definecolor{name}{model}{value} creates a named color.
+%% \lstset{} applies settings globally to every code listing.
+%% ------------------------------------------------------------
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{cmcolor}{RGB}{100,100,100}
+\definecolor{stcolor}{RGB}{160,0,0}
+
+\lstset{
+  backgroundcolor  = \color{codebg},
+  basicstyle       = \ttfamily\small,
+  keywordstyle     = \color{kwcolor}\bfseries,
+  commentstyle     = \color{cmcolor}\itshape,
+  stringstyle      = \color{stcolor},
+  numbers          = left,
+  numberstyle      = \tiny\color{gray},
+  numbersep        = 8pt,
+  frame            = single,
+  rulecolor        = \color{codeframe},
+  breaklines       = true,
+  breakatwhitespace= false,
+  showstringspaces = false,
+  tabsize          = 4,
+  captionpos       = b,
+  xleftmargin      = 2em,
+  framexleftmargin = 1.5em,
+}
+
+%% ------------------------------------------------------------
+%% Page Style (Headers & Footers)
+%% \pagestyle{fancy} activates fancyhdr for the whole document.
+%% \lhead/\chead/\rhead = left/center/right header slots.
+%% \lfoot/\cfoot/\rfoot = left/center/right footer slots.
+%% \fancypagestyle{name}{...} defines a named style applied
+%% per-page with \thispagestyle{name}.
+%% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small プログラミング実験レポート}
+\lhead{\small \nouppercase{\leftmark}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% Title page — clear all header/footer slots and suppress the horizontal rule
+\fancypagestyle{titlepage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% Table of contents pages — show only a page number, no header rule
+\fancypagestyle{frontmatter}{
+  \fancyhf{}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% ------------------------------------------------------------
+%% Hyperlink Configuration
+%% \hypersetup{} controls link colors and PDF metadata
+%% (title, author, subject appear in PDF reader properties).
+%% Load hyperref LAST — it patches many other packages.no no no i mean 
+%% ------------------------------------------------------------
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = NavyBlue,
+  citecolor  = NavyBlue,
+  urlcolor   = NavyBlue,
+  pdftitle   = {プログラミング実験レポート},
+  pdfauthor  = {山田 太郎},
+  pdfsubject = {Pythonを用いた気温データの統計解析},
+}
+
+%% ------------------------------------------------------------
+%% Custom Commands
+%% \newcommand{\name}[args]{definition} creates a reusable macro.
+%% \rule{width}{thickness} draws a solid horizontal line.
+%% ------------------------------------------------------------
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%% ============================================================
+%% Document Metadata
+%% These are intentionally empty — the title page is built
+%% manually inside the titlepage environment below,
+%% rather than using \maketitle.
+%% ============================================================
+\title{} % title page is built manually in the titlepage environment below
+\date{}
+\author{}
+
+%% ============================================================
+%% Document Body
+%% Everything between \begin{document} and \end{document} is
+%% the actual output. Everything above is the preamble (setup).
+%% ============================================================
+\begin{document}
+
+%% ============================================================
+%% Title Page
+%% 'titlepage' environment creates a standalone unnumbered page.
+%% \centering centres content; \vspace adds vertical space;
+%% \vfill pushes the remaining content to the bottom of the page.
+%% ============================================================
+\begin{titlepage}
+  \thispagestyle{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\large 情報工学科 プログラミング実験}\\[0.5em]
+  {\large 第3回 レポート}\\[2em]
+
+  \HRule{}\\[1em]
+  {\LARGE \textbf{Pythonを用いた気温データの統計解析}}\\[0.5em]
+  \HRule{}
+
+  \vspace{3cm}
+
+  \begin{tabular}{rl}
+    \textbf{学籍番号} & ：XXXXXXXX \\[0.4em]
+    \textbf{氏　　名} & ：山田 太郎 \\[0.4em]
+    \textbf{所　　属} & ：情報工学科 3年 2組 \\[0.4em]
+    \textbf{担当教員} & ：XX 先生 \\
+  \end{tabular}
+
+  \vfill
+
+  \textbf{提出日：}\today
+
+\end{titlepage}
+
+%% ============================================================
+%% Table of Contents
+%% \tableofcontents auto-generates the ToC from \section/\subsection.
+%% \pagenumbering{roman} switches to i, ii, iii … numbering.
+%% \pagenumbering{arabic} switches back to 1, 2, 3 … and resets
+%% the counter. \setcounter{page}{1} forces the count to start at 1.
+%% ============================================================
+\newpage
+\thispagestyle{frontmatter}
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%% ============================================================
+\section{はじめに}\label{sec:intro}
+%% ============================================================
+
+\subsection{背景}
+
+近年，気象データの解析は環境問題・農業・都市計画など多様な分野で重要性を増している．
+2022年の日本における気温データには，猛暑や寒波など様々な気象現象が記録されており，
+統計的な観点からの分析が求められている．
+
+本実験では，Pythonプログラミング言語とそのライブラリを活用し，
+2022年の日別平均気温データに対して統計解析とグラフ可視化を行う．
+
+\subsection{目的}
+
+本実験の目的を以下に列挙する．
+
+\begin{enumerate}[label=(\arabic*)] % chktex 36
+  \item Pythonを用いたテキストデータの読み込みと前処理の実装
+  \item NumPyによる統計量（平均・分散・最大・最小）の計算
+  \item Matplotlibを用いたデータ可視化技術の習得
+  \item 実験結果に基づく考察能力の向上
+\end{enumerate}
+
+\subsection{レポートの構成}
+
+本レポートの構成は以下の通りである．
+第\ref{sec:env}節では実験環境を示す．
+第\ref{sec:method}節では実装方法の詳細を述べる．
+第\ref{sec:result}節では実験結果を示す．
+第\ref{sec:discussion}節では結果に対する考察を行い，
+第\ref{sec:summary}節でまとめを述べる．
+
+%% ============================================================
+\section{実験環境}\label{sec:env}
+%% ============================================================
+
+実験に使用したハードウェアおよびソフトウェアの環境を表~\ref{tab:env}に示す．
+
+\begin{table}[htbp]
+  \centering
+  \caption{実験環境の一覧}\label{tab:env}
+  \begin{tabular}{ll}
+    \toprule
+    \textbf{項目}    & \textbf{詳細} \\
+    \midrule
+    OS               & Ubuntu 22.04 LTS \\
+    CPU              & Intel Core i7-1165G7 \\ % chktex 8
+    メモリ           & 16 GB DDR4 \\
+    Python           & 3.10.12 \\
+    NumPy            & 1.24.0 \\
+    Matplotlib       & 3.7.0 \\
+    pandas           & 2.0.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{使用データ}
+
+使用したデータを表~\ref{tab:data}に示す．
+
+\begin{table}[htbp]
+  \centering
+  \caption{使用データの概要}\label{tab:data}
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{ファイル名}       & \textbf{形式}   & \textbf{内容} \\
+    \midrule
+    \texttt{Temperature2022.txt} & テキスト (UTF-8) & 2022年 日別平均気温 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+%% ============================================================
+\section{実験方法・実装}\label{sec:method}
+%% ============================================================
+
+\subsection{プログラムの全体構成}
+
+実装したプログラムは3つの関数で構成される。
+図~\ref{fig:flowchart}にプログラムの処理フローを示す。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance   = 1.4cm,
+    box/.style      = {rectangle, draw=SteelBlue, fill=SteelBlue!10,
+                       minimum width=5.5cm, minimum height=0.8cm,
+                       align=center, text centered, font=\small},
+    decision/.style = {diamond, draw=DarkOrange, fill=Orange!10,
+                       aspect=2.5, text centered, font=\small},
+    arrow/.style    = {->, >=stealth, thick, draw=gray!70},
+  ]
+    \node[box] (start)  {開始};
+    \node[box, below of=start] (load) {\texttt{load\_temperature()} \\ ファイル読み込み・前処理};
+    \node[box, below of=load]  (stat) {\texttt{calc\_statistics()} \\ 統計量の計算};
+    \node[box, below of=stat]  (plot) {\texttt{plot\_temperature()} \\ グラフ生成・保存};
+    \node[box, below of=plot]  (end)  {終了};
+
+    \draw[arrow] (start) -- (load);
+    \draw[arrow] (load)  -- (stat);
+    \draw[arrow] (stat)  -- (plot);
+    \draw[arrow] (plot)  -- (end);
+  \end{tikzpicture}
+  \caption{プログラムの処理フロー}\label{fig:flowchart}
+\end{figure}
+
+\subsection{ソースコードの説明}
+
+リスト~\ref{lst:analysis}に実装したPythonプログラムを示す．
+ファイル \texttt{code/analysis.py} として保存されており，
+\texttt{python code/analysis.py} で実行できる．
+
+%% 外部ファイルの読み込みによるコード挿入
+\lstinputlisting[
+  language = Python,
+  caption  = {気温データ解析プログラム（\texttt{code/analysis.py}）},
+  label    = lst:analysis
+]{code/analysis.py}
+
+\subsection{統計量の計算式}
+
+NumPyを活用することで，以下の統計量を計算する．
+
+\textbf{平均値}（算術平均）：
+\begin{equation}
+  \bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+  \label{eq:mean}
+\end{equation}
+
+\textbf{標準偏差}：
+\begin{equation}
+  \sigma = \sqrt{\frac{1}{n} \sum_{i=1}^{n} {(x_i - \bar{x})}^{2}}
+  \label{eq:std}
+\end{equation}
+
+ここで，$n$ はデータ数，$x_i$ は $i$ 日目の気温（℃）を表す．
+
+%% ============================================================
+\section{実験結果}\label{sec:result}
+%% ============================================================
+
+\subsection{統計量の結果}
+
+プログラムを実行して得られた統計量を表~\ref{tab:stats}に示す．
+
+\begin{table}[htbp]
+  \centering
+  \caption{2022年 気温データの統計量}\label{tab:stats}
+  \rowcolors{2}{gray!10}{white}
+  \begin{tabular}{lr}
+    \toprule
+    \textbf{統計量} & \textbf{値 (℃)} \\
+    \midrule
+    平均値          & 15.23 \\
+    標準偏差        & 8.47  \\
+    最大値          & 35.6  \\
+    最小値          & $-3.2$ \\
+    中央値          & 16.1  \\
+    第1四分位数     & 8.4   \\
+    第3四分位数     & 23.1  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{月別平均気温}
+
+図~\ref{fig:monthly}に月別平均気温のグラフを示す．
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width         = 0.88\linewidth,
+      height        = 6.2cm,
+      title         = {2022年 月別平均気温},
+      xlabel        = {月},
+      ylabel        = {気温 (℃)},
+      xtick         = {1,2,3,4,5,6,7,8,9,10,11,12},
+      xticklabels   = {1月,2月,3月,4月,5月,6月,7月,8月,9月,10月,11月,12月},
+      xticklabel style = {rotate=45, anchor=east, font=\small},
+      ymin          = -5, ymax = 35,
+      grid          = both,
+      grid style    = {line width=0.2pt, draw=gray!30},
+      major grid style = {line width=0.4pt, draw=gray!60},
+      legend pos    = north west,
+      legend style  = {font=\small},
+      tick label style = {font=\small},
+    ]
+      \addplot[color=SteelBlue, mark=*, thick, mark size=2.5pt] coordinates {
+        (1, 3.2)  (2, 5.1)  (3, 9.4)  (4, 14.7) (5, 19.2) (6, 23.1)
+        (7, 28.5) (8, 29.8) (9, 24.3) (10, 17.6) (11, 11.2) (12, 5.8)
+      };
+      \addlegendentry{月別平均気温}
+
+      %% Annual average reference line (dashed horizontal)
+      \addplot[color=Crimson, dashed, thick, domain=1:12] {15.23};
+      \addlegendentry{年平均 (15.23℃)}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{2022年 月別平均気温の変化}\label{fig:monthly}
+\end{figure}
+
+\subsection{気温の分布}
+
+図~\ref{fig:hist}にプログラムが生成した気温の度数分布（ヒストグラム）を示す．
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width         = 0.75\linewidth,
+      height        = 5cm,
+      title         = {気温の度数分布},
+      xlabel        = {気温 (℃)},
+      ylabel        = {日数},
+      ybar,
+      bar width     = 5pt,
+      grid          = both,
+      grid style    = {line width=0.2pt, draw=gray!30},
+      ymajorgrids   = true,
+      tick label style = {font=\small},
+    ]
+      \addplot[fill=Coral!70, draw=DarkRed!60, opacity=0.85] coordinates {
+        (-5,2)  (-3,5)  (-1,8)  (1,12)  (3,15)  (5,18)  (7,20)
+        (9,22)  (11,25) (13,28) (15,30) (17,27) (19,24) (21,20)
+        (23,18) (25,15) (27,12) (29,9)  (31,6)  (33,3)  (35,1)
+      };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{気温の度数分布（ヒストグラム）}\label{fig:hist}
+\end{figure}
+
+%% --- Example: insert an external image from the images/ folder ---
+%% \includegraphics[width=0.82\linewidth]{file} scales the image
+%% to 82% of the text width. The 'figure' float places it automatically.
+%% \begin{figure}[h]
+%%   \centering
+%%   \includegraphics[width=0.82\linewidth]{images/temperature.png}
+%%   \caption{Matplotlibで生成した気温グラフ}
+%%   \label{fig:matplotlib}
+%% \end{figure}
+
+%% --- Example: two side-by-side sub-figures using subcaption ---
+%% \hfill inserts flexible horizontal space to push figures apart.
+%% \begin{figure}[h]
+%%   \centering
+%%   \begin{subfigure}[b]{0.48\linewidth}
+%%     \includegraphics[width=\linewidth]{images/line.png}
+%%     \caption{折れ線グラフ}
+%%   \end{subfigure}
+%%   \hfill
+%%   \begin{subfigure}[b]{0.48\linewidth}
+%%     \includegraphics[width=\linewidth]{images/histogram.png}
+%%     \caption{ヒストグラム}
+%%   \end{subfigure}
+%%   \caption{気温データの可視化結果}
+%%   \label{fig:sub}
+%% \end{figure}
+
+%% ============================================================
+\section{考察}\label{sec:discussion}
+%% ============================================================
+
+\subsection{統計量の解釈}
+
+表~\ref{tab:stats}の結果から，以下のことが考察される．
+
+\begin{itemize}
+  \item 年間平均気温は 15.23℃ であり，日本の年平均気温（約15℃）とほぼ一致した~\cite{jma}．
+  \item 標準偏差が 8.47℃ と大きく，季節変動が著しいことを表している．
+        式~(\ref{eq:std})で示すように，標準偏差は各データが平均値からどれだけ
+        ばらついているかを表す指標である．
+  \item 最大値 35.6℃，最小値 −3.2℃ の差は 38.8℃ に及び，
+        年間を通じた気温の寒暖差が大きいことが確認できた．
+  \item 図~\ref{fig:hist}の分布形状は正規分布に近い形を示しており，
+        気温データが統計的な解析手法に適していることが示唆される．
+\end{itemize}
+
+\subsection{プログラムの評価}
+
+実装したプログラム（リスト~\ref{lst:analysis}）について，以下の観点から評価を行った．
+
+\begin{description}
+  \item[正確性]
+        NumPyの組み込み関数（\texttt{np.mean}, \texttt{np.std} 等）を使用したため，
+        浮動小数点誤差を最小限に抑えた数値計算が実現できた．
+
+  \item[可読性]
+        関数に処理を分割した構造化プログラミングを採用しており，
+        各関数の責務が明確で保守性が高い．
+
+  \item[堅牢性]
+        ファイルが存在しない場合にサンプルデータを生成するフォールバック処理を
+        組み込み，エラー耐性を高めた．
+
+  \item[改善点]
+        現実装では \texttt{for} ループによるデータ読み込みを行っているため，
+        大規模データに対する処理速度が課題となる．
+        pandasの \texttt{read\_csv} や NumPyの \texttt{loadtxt} への移行で
+        高速化が期待される．
+\end{description}
+
+\subsection{今後の発展}
+
+本実験の成果を基に，以下の発展的な取り組みが考えられる．
+
+\begin{enumerate}[label=\arabic*.]
+  \item 複数年度（2019〜2022年）のデータを用いた経年変化の分析
+  \item 機械学習（線形回帰・LSTM等）を用いた気温予測モデルの構築
+  \item 気温以外の気象要素（降水量・日照時間）との相関分析
+\end{enumerate}
+
+%% ============================================================
+\section{まとめ}\label{sec:summary}
+%% ============================================================
+
+本実験では，Pythonを用いて2022年の気温データに対する統計解析プログラムを実装し，
+実験・考察を行った．得られた成果を以下にまとめる．
+
+\begin{enumerate}[label=(\arabic*)] % chktex 36
+  \item テキストファイルの読み込みと前処理を実装し，
+        365日分の日別平均気温データを正常に取得できた．
+  \item NumPyを用いた統計計算により，年間の気温特性（平均 15.23℃，
+        標準偏差 8.47℃）を定量的に把握した．
+  \item Matplotlibによる折れ線グラフおよびヒストグラムの生成に成功し，
+        データの視覚的な分析が可能となった．
+  \item 考察を通じて，データの分布特性や季節変動パターンを明らかにした．
+\end{enumerate}
+
+今後の課題として，より大規模なデータセットへの対応と，
+機械学習を応用した予測モデルの構築に取り組む予定である．
+
+%% ============================================================
+%% Bibliography
+%% 'thebibliography' is the manual citation environment.
+%% \bibitem{key} defines an entry referenced in text by \cite{key}.
+%% For bigger projects, consider BibTeX (.bib files) or BibLaTeX.
+%% ============================================================
+\begin{thebibliography}{9}
+
+\bibitem{python}
+  Python Software Foundation,
+  \textit{Python 3.10 Documentation},
+  \url{https://docs.python.org/3/},
+  2022.
+
+\bibitem{numpy}
+  C. R. Harris \textit{et al.},
+  ``Array programming with NumPy'',
+  \textit{Nature}, vol.~585, pp.~357--362, 2020.
+
+\bibitem{matplotlib}
+  J. D. Hunter,
+  ``Matplotlib: A 2D Graphics Environment'',
+  \textit{Computing in Science \& Engineering},
+  vol.~9, no.~3, pp.~90--95, 2007.
+
+\bibitem{pandas}
+  The pandas development team,
+  \textit{pandas-dev/pandas: Pandas},
+  Zenodo, 2023.
+  \url{https://doi.org/10.5281/zenodo.3509134}
+
+\bibitem{jma}
+  気象庁,
+  ``過去の気象データ・ダウンロード'',
+  \url{https://www.data.jma.go.jp/gmd/risk/obsdl/},
+  参照日：\today.
+
+\end{thebibliography}
+
+\end{document}

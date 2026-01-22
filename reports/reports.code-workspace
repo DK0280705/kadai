@@ -1,0 +1,44 @@
+{
+  "folders": [
+    { "path": "tex-example" },
+    { "path": "Rの基礎と画像データ処理" }
+  ],
+  "settings": {
+    // ── LaTeX Workshop ──────────────────────────────────────────
+    // Use latexmk, which reads .latexmkrc (LuaLaTeX + synctex=1)
+    "latex-workshop.latex.tools": [
+      {
+        "name": "latexmk",
+        "command": "latexmk",
+        "args": ["%DOC%"],
+        "env": {}
+      }
+    ],
+    "latex-workshop.latex.recipes": [
+      {
+        "name": "latexmk (LuaLaTeX via .latexmkrc)",
+        "tools": ["latexmk"]
+      }
+    ],
+
+    // Always use the first (and only) recipe
+    "latex-workshop.latex.recipe.default": "first",
+
+    // Root file is main.tex in the workspace root
+    "latex-workshop.latex.rootFile.useSubFileAsRoot": false,
+
+    // Clean up intermediate files (mirrors `make clean`)
+    "latex-workshop.latex.autoClean.run": "never",
+    "latex-workshop.latex.clean.fileTypes": [
+      "*.aux", "*.log", "*.toc", "*.out",
+      "*.synctex.gz", "*.fls", "*.fdb_latexmk",
+      "*.nav", "*.snm", "*.vrb"
+    ],
+
+    // SyncTeX: jump to source on Ctrl+click in PDF viewer
+    "latex-workshop.synctex.afterBuild.enabled": true,
+
+    // Use the built-in PDF viewer (tab inside VS Code)
+    "latex-workshop.view.pdf.viewer": "tab",
+  }
+}
