@@ -1,7 +1,14 @@
 {
   "folders": [
-    { "path": "tex-example" },
-    { "path": "Rの基礎と画像データ処理" }
+    {
+      "path": "tex-example"
+    },
+    {
+      "path": "Rの基礎と画像データ処理"
+    },
+    {
+      "path": "数値経産(前期)"
+    }
   ],
   "settings": {
     // ── LaTeX Workshop ──────────────────────────────────────────
@@ -10,7 +17,7 @@
       {
         "name": "latexmk",
         "command": "latexmk",
-        "args": ["%DOC%"],
+        "args": ["--cd", "%DOC%"],
         "env": {}
       }
     ],
