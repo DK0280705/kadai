@@ -1,0 +1,852 @@
+%% ============================================================
+%% School Report Template (Japanese / LuaLaTeX)
+%% Compile with: lualatex main.tex  or  latexmk main.tex
+%%
+%% \documentclass[options]{class} is always the first command.
+%% '12pt' sets the base font size; 'a4paper' sets the paper size.
+%% 'ltjsreport' is the LuaLaTeX Japanese report document class (supports chapters).
+%% ============================================================
+
+%% ============================================================
+%% 1. DOCUMENT CLASS
+%% ============================================================
+\documentclass[12pt,a4paper]{ltjsreport}
+
+%% ============================================================
+%% 2. PACKAGE IMPORTS
+%% ============================================================
+%% ------------------------------------------------------------
+%% Package Imports
+%% \usepackage[options]{name} loads a package from the preamble.
+%% Packages extend LaTeX — fonts, colors, math, figures, tables…
+%% ------------------------------------------------------------
+%% Latin Modern: freely scalable version of Computer Modern.
+%% Prevents "Font ... not available, size <X> substituted" warnings
+%% that pgfplots can trigger when computing tiny axis-label sizes.
+\usepackage{lmodern}
+%% Japanese font setup — change the option to match your system.
+%%   Options: [noto-otf], [ipaex], [hiragino-pron], [kozuka-pr6n]
+%%   No option → use the system default font
+\usepackage{luatexja-preset}
+
+%% Page layout — 'geometry' sets margins directly (top/bottom/left/right)
+\usepackage[top=30mm, bottom=25mm, left=25mm, right=25mm]{geometry}
+
+%% Section heading spacing — reduce vertical space before/after \section and \subsection.
+%% Use the starred (*) versions to suppress paragraph indentation after the heading.
+\usepackage{titlesec}
+\titlespacing{\section}{0pt}{3.5ex plus 1ex minus 0.5ex}{2.3ex plus 0.5ex}
+\titlespacing{\subsection}{0pt}{3.25ex plus 1ex minus 0.5ex}{1.5ex plus 0.5ex}
+
+%% Color — 'svgnames' unlocks named colors like SteelBlue, Coral; 'table' colors table rows
+\usepackage[svgnames,table]{xcolor}
+
+%% Image inclusion — provides \includegraphics[width=...]{file}
+\usepackage{graphicx}
+
+%% TikZ / pgfplots — draw vector diagrams and data charts inline in LaTeX
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%% Source code — use \lstinputlisting{file} or lstlisting environment for highlighted code
+\usepackage{listings}
+\renewcommand{\lstlistingname}{ソースコード}
+
+%% Hyperlinks — makes ToC entries, \ref, \cite, and \url clickable in the PDF
+\usepackage{hyperref}
+
+%% Header and footer customization (configured in the Page Style section below)
+\usepackage{fancyhdr}
+
+%% Captions and sub-figures — sub-figures are labeled (a), (b), … automatically
+\usepackage[format=hang, font=small, labelfont=bf, compatibility=false]{caption}
+\usepackage{subcaption}
+
+%% Mathematics — amsmath adds equation/align environments; amssymb adds ∀, ∈, ℝ, etc.
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% Professional table rules — \toprule, \midrule, \bottomrule instead of \hline
+\usepackage{booktabs}
+
+%% Algorithms — pseudocode in a mathematical style
+\usepackage[plain,boxed,noend]{algorithm2e}
+\SetKwInOut{KwIn}{入力}
+\SetKwInOut{KwOut}{出力}
+\SetKwComment{Comment}{// }{}
+\SetKwFor{ForAll}{for all}{do}{end for}
+\SetKwIF{If}{ElseIf}{Else}{if}{then}{else if}{else}{end if}
+%% Reduce algorithm top/bottom margins
+\SetAlgoSkip{medskip}
+
+
+%% URL
+\usepackage{url}
+
+%% List customization — control bullet/numbered list labels, spacing, and indentation
+\usepackage{enumitem}
+\setlist[enumerate]{topsep=2pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+\setlist[itemize]{topsep=2pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+
+%% ============================================================
+%% 3. LISTINGS (SOURCE CODE) CONFIGURATION
+%% ============================================================
+%% ------------------------------------------------------------
+%% Source Code Block Appearance
+%% \definecolor{name}{model}{value} creates a named color.
+%% \lstset{} applies settings globally to every code listing.
+%% ------------------------------------------------------------
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{cmcolor}{RGB}{100,100,100}
+\definecolor{stcolor}{RGB}{160,0,0}
+
+\lstset{
+  backgroundcolor  = \color{codebg},
+  basicstyle       = \ttfamily\small,
+  keywordstyle     = \color{kwcolor}\bfseries,
+  commentstyle     = \color{cmcolor}\itshape,
+  stringstyle      = \color{stcolor},
+  numbers          = left,
+  numberstyle      = \tiny\color{gray},
+  numbersep        = 8pt,
+  frame            = single,
+  rulecolor        = \color{codeframe},
+  breaklines       = true,
+  breakatwhitespace= false,
+  showstringspaces = false,
+  tabsize          = 4,
+  captionpos       = b,
+  xleftmargin      = 2em,
+  framexleftmargin = 1.5em,
+}
+
+%% ============================================================
+%% 4. PAGE STYLE (HEADERS & FOOTERS)
+%% ============================================================
+%% ------------------------------------------------------------
+%% Page Style (Headers & Footers)
+%% \pagestyle{fancy} activates fancyhdr for the whole document.
+%% \lhead/\chead/\rhead = left/center/right header slots.
+%% \lfoot/\cfoot/\rfoot = left/center/right footer slots.
+%% \fancypagestyle{name}{...} defines a named style applied
+%% per-page with \thispagestyle{name}.
+%% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small 数値計算 (前期)}
+\lhead{\small \nouppercase{\leftmark}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% Title page — clear all header/footer slots and suppress the horizontal rule
+\fancypagestyle{titlepage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% Table of contents pages — show only a page number, no header rule
+\fancypagestyle{frontmatter}{
+  \fancyhf{}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% Chapter pages — redefine 'plain' to match 'fancy' for consistency
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \rhead{\small 数値計算 (前期)}
+  \lhead{\small \nouppercase{\leftmark}}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+%% ============================================================
+%% 5. HYPERLINK CONFIGURATION
+%% ============================================================
+%% ------------------------------------------------------------
+%% Hyperlink Configuration
+%% \hypersetup{} controls link colors and PDF metadata
+%% (title, author, subject appear in PDF reader properties).
+%% ------------------------------------------------------------
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = NavyBlue,
+  citecolor  = NavyBlue,
+  urlcolor   = NavyBlue,
+  pdftitle   = {数値計算 (前期)},
+  pdfauthor  = {Deka Risman Permana},
+  pdfsubject = {Pythonを用いた気温データの統計解析},
+  plainpages = false,  % Suppress duplicate page identifier warnings
+  pdfpagelabels = true,  % Use PDF page labels for different numbering schemes
+}
+
+%% ============================================================
+%% 6. CUSTOM COMMANDS
+%% ============================================================
+%% ------------------------------------------------------------
+%% Custom Commands
+%% \newcommand{\name}[args]{definition} creates a reusable macro.
+%% \rule{width}{thickness} draws a solid horizontal line.
+%% ------------------------------------------------------------
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%% ============================================================
+%% 7. CHAPTER CUSTOMIZATION & SECTION NUMBERING
+%% ============================================================
+%% ------------------------------------------------------------
+%% Chapter Customization
+%% - Use fancy page style (show headers on chapter pages)
+%% - Reduce vertical spacing before/after chapter titles
+%% ------------------------------------------------------------
+\renewcommand{\prechaptername}{計算}
+\renewcommand{\postchaptername}{}
+
+%% ── Section Numbering ────────────────────────────────────────
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\makeatletter
+\renewcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi%
+  \thispagestyle{fancy}%
+  \global\@topnum\z@%
+  \@afterindentfalse%
+  \secdef\@chapter\@schapter}
+\def\@makechapterhead#1{%
+  \vspace*{5pt}%  % Space before chapter (reduced from default 50pt)
+  {\parindent\z@\raggedright\normalfont%
+    \ifnum\c@secnumdepth>\m@ne%
+      \LARGE\bfseries\@chapapp\thechapter\@chappos%
+      \par\nobreak%
+      \vskip 10\p@  % Space between chapter number and title
+    \fi%
+    \interlinepenalty\@M%
+    \LARGE\bfseries #1\par\nobreak%
+    \vskip 20\p@  % Space after chapter title (default: 40pt)
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{5pt}%  % Space before unnumbered chapter
+  {\parindent\z@\raggedright%
+    \normalfont%
+    \interlinepenalty\@M%
+    \LARGE\bfseries #1\par\nobreak%
+    \vskip 20\p@  % Space after unnumbered chapter
+  }}
+\makeatother
+
+%% ============================================================
+%% 8. DOCUMENT METADATA
+%% ============================================================
+%% Document Metadata
+%% These are intentionally empty — the title page is built
+%% manually inside the titlepage environment below,
+%% rather than using \maketitle.
+%% ============================================================
+\title{} % title page is built manually in the titlepage environment below
+\date{}
+\author{}
+
+%% ============================================================
+%% 9. DOCUMENT BODY
+%% ============================================================
+\begin{document}
+
+%% ============================================================
+%% 9a. TITLE PAGE
+%% ============================================================
+\begin{titlepage}
+  \thispagestyle{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\large 数値計算}\\[0.5em]
+  {\large 前期レポート}\\[2em]
+
+  \HRule{}\\[1.5em]
+  {\Huge \textbf{数値計算 (前期)}}\\[0.5em]
+  \HRule{}
+
+  \vspace{3cm}
+
+  \begin{tabular}{rl}
+    \textbf{氏　　名} & ：Deka Risman Permana\\[0.4em]
+    \textbf{学　　科} & ：人間情報システム工学科 4年\\[0.4em]
+    \textbf{出席番号} & ：4347\\[0.4em]
+    \textbf{担当教員} & ：小松一男\\
+  \end{tabular}
+
+  \vfill
+
+\end{titlepage}
+
+%% ============================================================
+%% 9b. TABLE OF CONTENTS
+%% ============================================================
+\newpage
+\thispagestyle{frontmatter}
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%% ============================================================
+%% 9c. CHAPTER 1 -- 連立1次方程式の解法
+%% ============================================================
+\chapter{連立1次方程式の解法}\label{chap:linear-equations}
+
+%% -- 1.1 目標 --
+\section{目標}
+次の4つの数値解法による連立1次方程式の解法が理解でき、プログラミングによる問題解決ができる。
+\begin{itemize}
+    \item ガウス・ザイデル法 (反復法) (Gauss-Seidel method)
+    \item SOR法 (逐次式加速緩和法) (Successive Over-Relaxation method)
+    \item ガウス・ジョルダン法 (消去法) (Gauss-Jordan method)
+    \item 逆行列 (掃き出し法) による解法 (Inverse Matrix method)
+\end{itemize}
+
+%% -- 1.2 理論 --
+\section{理論}
+
+%% -- 1.2.1 ガウス・ザイデル法 --
+\subsection{ガウス・ザイデル法}
+
+$n$元の連立1次方程式：
+\begin{equation}
+\begin{cases}
+a_{11}x_1 + a_{12}x_2 + \cdots + a_{1n}x_n = b_1 \\
+a_{21}x_1 + a_{22}x_2 + \cdots + a_{2n}x_n = b_2 \\
+\vdots \\
+a_{n1}x_1 + a_{n2}x_2 + \cdots + a_{nn}x_n = b_n
+\end{cases}
+\end{equation}
+の計算機を用いた反復法による解法を考える。この連立方程式を変形して、
+\begin{equation}
+\begin{cases}
+x_1^{(k)} = \frac{1}{a_{11}}\{b_1 - (a_{12}x_2^{(k-1)} + a_{13}x_3^{(k-1)} + \cdots + a_{1n}x_n^{(k-1)})\} \\
+x_2^{(k)} = \frac{1}{a_{22}}\{b_2 - (a_{21}x_1^{(k)} + a_{23}x_3^{(k-1)} + \cdots + a_{2n}x_n^{(k-1)})\} \\
+\vdots \\
+x_n^{(k)} = \frac{1}{a_{nn}}\{b_n - (a_{n1}x_1^{(k)} + a_{n2}x_2^{(k)} + \cdots + a_{nn-1}x_{n-1}^{(k)})\}
+\end{cases}
+\end{equation}
+とする。ただし、$x_i$の右肩の添え字$(k)$は$k$回繰り返し計算後の$x_i$の近似値を表す。ガウス・ザイデル法は初期値$\boldsymbol{x}^{(0)} = [x_1^{(0)}, x_2^{(0)}, \cdots, x_n^{(0)}]^T$を与えて、この式から$k$回後の近似値$\boldsymbol{x}^{(k)} = [x_1^{(k)}, x_2^{(k)}, x_3^{(k)}, \cdots, x_n^{(k)}]^T$を解析解に収束させようとするアルゴリズムである。
+
+\textbf{収束条件：}ガウス・ザイデル法の収束するための十分条件は、
+\begin{equation}
+\sum_{j=1, i\neq j}^{n} \frac{|a_{ij}|}{|a_{ii}|} < 1
+\end{equation}
+または、
+\begin{equation}
+\sum_{j=1, i\neq j}^{n} |a_{ij}| < |a_{ii}|
+\end{equation}
+ただし、$i = 1, 2, \cdots, n$である。この式が成り立つならば初期値$\boldsymbol{x}^{(0)}$に関わらず解析解に収束することが知られている。
+
+\begin{algorithm}[H]
+\KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル, $\boldsymbol{x}^{(0)} \in \mathbb{R}^{n}$: 初期値, $\varepsilon$: 収束判定値}
+\KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
+\BlankLine
+$M \leftarrow 0$\;
+\Repeat{$M = n$}{
+  $M \leftarrow 0$\;
+  \For{$i \leftarrow 1$ \KwTo $n$}{
+    $S \leftarrow 0$\;
+    \For{$j \leftarrow 1$ \KwTo $n$}{
+      $S \leftarrow S + a_{ij} \cdot x_j$\;
+    }
+    $X \leftarrow \dfrac{1}{a_{ii}}\bigl(b_i - S + a_{ii} \cdot x_i\bigr)$\;
+    \If{$\left|\dfrac{X - x_i}{X}\right| < \varepsilon$}{
+      $M \leftarrow M + 1$\;
+    }
+    $x_i \leftarrow X$\;
+  }
+}
+\Return{$\boldsymbol{x}$}
+\end{algorithm}
+
+%% -- 1.2.2 SOR法 --
+\subsection{SOR法}
+
+$n$元の連立1次方程式をガウス・ザイデル法で解くには収束が遅く、加速が必要になる場合がある。その際、ガウス・ザイデル法の式より
+\begin{equation}
+\begin{aligned}
+\boldsymbol{x}^{(k)} &= \boldsymbol{b} - A_U\boldsymbol{x}^{(k-1)} - A_L\boldsymbol{x}^{(k)} \\
+&= \boldsymbol{x}^{(k-1)} + ((\boldsymbol{b} - A_U\boldsymbol{x}^{(k-1)} - A_L\boldsymbol{x}^{(k)}) - \boldsymbol{x}^{(k-1)}) \\
+&= \boldsymbol{x}^{(k-1)} + \Delta\boldsymbol{x}^{(k)}
+\end{aligned}
+\end{equation}
+とおく。ここで、$\Delta\boldsymbol{x}^{(k)}$は$\boldsymbol{x}^{(k-1)}$に対する$\boldsymbol{x}^{(k)}$の変化分である。SOR法は$\boldsymbol{x}^{(k)}$が速く解に収束していくように加速パラメータ$\omega$を導入して
+\begin{equation}
+\boldsymbol{x}^{(k)} = \boldsymbol{x}^{(k-1)} + \omega((\boldsymbol{b} - A_U\boldsymbol{x}^{(k-1)} - A_L\boldsymbol{x}^{(k)}) - \boldsymbol{x}^{(k-1)})
+\end{equation}
+ただし、
+\begin{equation}
+0 < \omega < 2
+\end{equation}
+とした方法である。収束の速さは加速パラメータ$\omega$の選び方による。$\omega = 1$のときはガウス・ザイデル法と同じである。最適な$\omega$を定める一般的な理論はまだ確立されていない。
+
+\begin{algorithm}[H]
+\KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル, $\boldsymbol{x}^{(0)} \in \mathbb{R}^{n}$: 初期値, $\omega$: 加速パラメータ ($0 < \omega < 2$), $\varepsilon$: 収束判定値}
+\KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
+\BlankLine
+$M \leftarrow 0$\;
+\Repeat{$M = n$}{
+  $M \leftarrow 0$\;
+  \For{$i \leftarrow 1$ \KwTo $n$}{
+    $S \leftarrow 0$\;
+    \For{$j \leftarrow 1$ \KwTo $n$}{
+      $S \leftarrow S + a_{ij} \cdot x_j$\;
+    }
+    $X \leftarrow \dfrac{1}{a_{ii}}\bigl(b_i - S + a_{ii} \cdot x_i\bigr)$\;
+    $X \leftarrow x_i + \omega\,(X - x_i)$\;
+    \If{$\left|\dfrac{X - x_i}{X}\right| < \varepsilon$}{
+      $M \leftarrow M + 1$\;
+    }
+    $x_i \leftarrow X$\;
+  }
+}
+\Return{$\boldsymbol{x}$}
+\end{algorithm}
+
+%% -- 1.2.3 ガウス・ジョルダン法 --
+\subsection{ガウス・ジョルダン法}
+
+連立1次方程式$A\boldsymbol{x} = \boldsymbol{b}$を行列で表すと、
+\begin{equation}
+\boldsymbol{x} = \begin{pmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{pmatrix}, \quad
+A = \begin{pmatrix} 
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{pmatrix}, \quad
+\boldsymbol{b} = \begin{pmatrix} b_1 \\ b_2 \\ \vdots \\ b_n \end{pmatrix}
+\end{equation}
+となる。$n \times (n+1)$の拡大行列$(A, \boldsymbol{b})$を最初の$n \times n$行列の部分が対角行列、または単位行列になるまで行に関する基本操作を行って、最後の$n+1$列に求める解を得る方法がガウス・ジョルダン法である。
+
+\textbf{部分ピボット選択：}ガウス・ジョルダン法では各段階$k$において、拡大行列の対角要素$c_{kk}$（ピボット）で割り算を行う。したがって、以下の2つの問題に対処する必要がある：
+
+\begin{enumerate}
+  \item \textbf{ゼロ割りの回避：}$c_{kk} = 0$のとき、その行で割ることができない。この場合、$k$行目以降の行の中で$k$列目の絶対値が最大の行を探し、$k$行目と入れ替える。
+  \item \textbf{丸め誤差の抑制：}$c_{kk} \neq 0$でも、その絶対値が非常に小さいと、割り算の結果が大きくなり、丸め誤差が拡大される。この問題を防ぐため、$k$列目の$k$行以降の要素の中で絶対値が最大のものをピボットとして選び、その行を$k$行目と交換する。
+\end{enumerate}
+
+以下のアルゴリズムは部分ピボット選択の手続きである。これはガウス・ジョルダン法および逆行列による解法の両方で用いられる。
+
+\begin{algorithm}[H]
+\KwIn{$C \in \mathbb{R}^{n \times m}$: 拡大行列, $k$: 現在の段階}
+\KwOut{$C \in \mathbb{R}^{n \times m}$: 行交換後の拡大行列}
+\BlankLine
+$p \leftarrow k$\;
+\For{$i \leftarrow k+1$ \KwTo $n$}{
+  \If{$|c_{ik}| > |c_{pk}|$}{
+    $p \leftarrow i$\;
+  }
+}
+\If{$p \neq k$}{
+  $C_k \leftrightarrow C_p$\;
+}
+\Return{$C$}
+\caption{部分ピボット選択 (Partial Pivoting)}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル}
+\KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
+\BlankLine
+$C \leftarrow [A \mid \boldsymbol{b}]$\;
+\For{$k \leftarrow 1$ \KwTo $n$}{
+  $C \leftarrow \text{PartialPivot}(C, k)$\;
+  $c' \leftarrow c_{kk}$\;
+  \For{$j \leftarrow k$ \KwTo $n+1$}{
+    $c_{kj} \leftarrow c_{kj}/c'$\;
+  }
+  \For{$i \leftarrow 1$ \KwTo $n$}{
+    \If{$i \neq k$}{
+      $c' \leftarrow c_{ik}$\;
+      \For{$j \leftarrow k$ \KwTo $n+1$}{
+        $c_{ij} \leftarrow c_{ij} - c_{kj} \times c'$\;
+      }
+    }
+  }
+}
+\For{$i \leftarrow 1$ \KwTo $n$}{
+  $x_i \leftarrow c_{i,\,n+1}$\;
+}
+\Return{$\boldsymbol{x}$}
+\caption{ガウス・ジョルダン法}
+\end{algorithm}
+
+%% -- 1.2.4 逆行列による解法 --
+\subsection{逆行列による解法}
+
+$n$元連立1次方程式：
+\begin{equation}
+A\boldsymbol{x} = \boldsymbol{b}
+\end{equation}
+の行列$A$が正則行列であればその解は逆行列を用いて
+\begin{equation}
+\boldsymbol{x} = A^{-1}\boldsymbol{b}
+\end{equation}
+となる。いま求めたい逆行列を$A^{-1} = [\boldsymbol{x}_1, \boldsymbol{x}_2, \cdots, \boldsymbol{x}_n]$、ただし$\boldsymbol{x}_i \in R^n$とおくと、
+\begin{equation}
+A[\boldsymbol{x}_1, \boldsymbol{x}_2, \cdots, \boldsymbol{x}_n] = I, \quad I: \text{単位行列}
+\end{equation}
+となり、
+\begin{equation}
+A\boldsymbol{x}_1 = \begin{pmatrix} 1 \\ 0 \\ \vdots \\ 0 \\ 0 \end{pmatrix}, \quad
+A\boldsymbol{x}_2 = \begin{pmatrix} 0 \\ 1 \\ \vdots \\ 0 \\ 0 \end{pmatrix}, \quad \cdots, \quad
+A\boldsymbol{x}_n = \begin{pmatrix} 0 \\ 0 \\ \vdots \\ 0 \\ 1 \end{pmatrix}
+\end{equation}
+を満たす$\boldsymbol{x}_1, \cdots, \boldsymbol{x}_n$を求める問題となるため、前述のガウス・ジョルダン法と同様に部分ピボット選択 (アルゴリズム3) を適用できる。
+
+\begin{algorithm}[H]
+\KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル}
+\KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
+\BlankLine
+$C \leftarrow [A \mid I]$\;
+\For{$k \leftarrow 1$ \KwTo $n$}{
+  $C \leftarrow \text{PartialPivot}(C, k)$\;
+  $c' \leftarrow c_{kk}$\;
+  \For{$j \leftarrow k$ \KwTo $2n$}{
+    $c_{kj} \leftarrow c_{kj}/c'$\;
+  }
+  \For{$i \leftarrow 1$ \KwTo $n$}{
+    \If{$i \neq k$}{
+      $c' \leftarrow c_{ik}$\;
+      \For{$j \leftarrow k$ \KwTo $2n$}{
+        $c_{ij} \leftarrow c_{ij} - c_{kj} \times c'$\;
+      }
+    }
+  }
+}
+\For{$i \leftarrow 1$ \KwTo $n$}{
+  $x_i \leftarrow 0$\;
+  \For{$j \leftarrow 1$ \KwTo $n$}{
+    $x_i \leftarrow x_i + c_{i,\,n+j} \cdot b_j$\;
+  }
+}
+\Return{$\boldsymbol{x}$}
+\caption{逆行列による解法}
+\end{algorithm}
+
+\newpage
+%% -- 1.3 実装 --
+\section{実装}
+
+%% -- 1.3.1 ガウス・ザイデル法の実装 --
+\subsection{ガウス・ザイデル法の実装}
+
+ガウス・ザイデル法は、各繰り返しで各行に対して新しい近似値を計算し、収束判定を行う反復法である。以下のコードは、NumPyを用いたPythonでの実装である。
+
+\lstinputlisting[language=Python, caption=ガウス・ザイデル法の実装]{code/gauss_seidel.py}
+
+この実装では、変数$x$を繰り返し更新し、全ての変数が収束条件$\left|\frac{X - x_i}{X}\right| < \varepsilon$を満たすまでループを続ける。初期値は$\boldsymbol{x} = [0, 0]^T$、収束判定値$\varepsilon = 10^{-6}$として計算している。
+
+%% -- 1.3.2 SOR法の実装 --
+\subsection{SOR法の実装}
+
+SOR法はガウス・ザイデル法に加速パラメータ$\omega$を導入した改良版である。アルゴリズムはガウス・ザイデル法と同じだが、計算後に$X \leftarrow x_i + \omega(X - x_i)$の加速ステップが追加される。
+
+\lstinputlisting[language=Python, caption=SOR法の実装]{code/sor.py}
+
+加速パラメータ$\omega$は$0 < \omega < 2$の範囲で選択される。$\omega = 1$のときはガウス・ザイデル法と同じになり、$1 < \omega < 2$のとき加速効果が期待できる。本実装では$\omega = 1.4$として計算している。
+
+%% -- 1.3.3 ガウス・ジョルダン法の実装 --
+\subsection{ガウス・ジョルダン法の実装}
+
+ガウス・ジョルダン法は、拡大行列$(A, \boldsymbol{b})$に対して行基本操作を施し、$A$の部分が単位行列になるまで変換する消去法である。本実装では部分ピボット選択を行い、数値的安定性を確保している。
+
+\lstinputlisting[language=Python, caption=ガウス・ジョルダン法の実装]{code/gauss_jordan.py}
+
+%% -- 1.3.4 逆行列による解法の実装 --
+\subsection{逆行列による解法の実装}
+
+逆行列を用いた解法は、行列$A$の逆行列$A^{-1}$を先に計算し、その後$\boldsymbol{x} = A^{-1}\boldsymbol{b}$により解を求める方法である。逆行列の計算は拡大行列$(A, I)$に対してガウス・ジョルダン法を適用することで行われる。
+
+\lstinputlisting[language=Python, caption=逆行列による解法の実装]{code/inverse_matrix.py}
+
+この実装では、拡大行列$C = (A, I)$（$n \times 2n$行列）に対してガウス・ジョルダン法を適用し、左半分が単位行列になるまで変換する。変換後の右半分$n \times n$行列が逆行列$A^{-1}$となり、最後に$\boldsymbol{x} = A^{-1}\boldsymbol{b}$を計算して解を求める。
+
+\newpage
+
+%% -- 1.4 演習課題 --
+\section{演習課題}
+
+%% -- 1.4.1 課題 1.1 --
+\subsection*{課題 1.1}
+次の連立1次方程式をガウス・ザイデル法で解け。
+\begin{equation}
+\begin{cases}
+3x_1 - x_2 = 2 \\
+2x_1 + 4x_2 = 1
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[3, -1], [2, 4]], dtype=np.float64)
+>>> b = np.array([2, 1], dtype=np.float64)
+>>> x0 = np.zeros(2)
+>>> x = gauss_seidel(A, b, x0, epsilon=1e-6)
+>>> x
+array([ 0.64285714, -0.07142857])
+\end{lstlisting}
+解析解 $\boldsymbol{x} = [0.643,\; -0.071]^T$ と一致。
+
+%% -- 1.4.2 課題 1.2 --
+\subsection*{課題 1.2}
+次の連立1次方程式をガウス・ザイデル法とSOR法で解け。ただし、このままで収束しないため行を入れ替えるピボット選択が必要である。
+\begin{equation}
+\begin{cases}
+4x_1 + 6x_2 = 6 \\
+5x_1 + 3x_2 = 1
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[5, 3], [4, 6]], dtype=np.float64)  # ピボット後
+>>> b = np.array([1, 6], dtype=np.float64)
+>>> x0 = np.zeros(2)
+>>> gauss_seidel(A, b, x0, epsilon=1e-6)
+array([-0.66666667,  1.44444444])
+>>> SOR(A, b, x0, omega=1.4, epsilon=1e-6)
+array([-0.66666667,  1.44444444])
+\end{lstlisting}
+いずれも解析解 $\boldsymbol{x} = [-0.667,\; 1.444]^T$ と一致。
+
+%% -- 1.4.3 課題 1.3 --
+\subsection*{課題 1.3}
+次の連立1次方程式をガウス・ザイデル法とSOR法で解け。
+\begin{equation}
+\begin{cases}
+2x_1 + x_2 + x_3 = 1 \\
+2x_2 + x_3 = 2 \\
+x_1 + x_2 + x_3 = 2
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[2, 1, 1], [0, 2, 1], [1, 1, 1]], dtype=np.float64)
+>>> b = np.array([1, 2, 2], dtype=np.float64)
+>>> x0 = np.zeros(3)
+>>> gauss_seidel(A, b, x0, epsilon=1e-6)
+array([-1., -1.,  4.])
+>>> SOR(A, b, x0, omega=1.4, epsilon=1e-6)
+array([-1., -1.,  4.])
+\end{lstlisting}
+いずれも解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
+
+\subsection*{課題 1.4}
+次の連立1次方程式をガウス・ジョルダン法で解け。
+\begin{equation}
+\begin{cases}
+2x_1 + x_2 + x_3 = 1 \\
+2x_2 + x_3 = 2 \\
+x_1 + x_2 + x_3 = 2
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[2, 1, 1], [0, 2, 1], [1, 1, 1]], dtype=np.float64)
+>>> b = np.array([1, 2, 2], dtype=np.float64)
+>>> gauss_jordan(A, b)
+array([-1., -1.,  4.])
+\end{lstlisting}
+解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
+
+\subsection*{課題 1.5}
+次の連立1次方程式を正規化を行ったガウス・ジョルダン法で解け。
+\begin{equation}
+\begin{cases}
+2x_1 + x_2 + x_3 = 1 \\
+2x_2 + x_3 = 2 \\
+x_1 + x_2 + x_3 = 2
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[2, 1, 1], [0, 2, 1], [1, 1, 1]], dtype=np.float64)
+>>> b = np.array([1, 2, 2], dtype=np.float64)
+>>> gauss_jordan(A, b)
+array([-1., -1.,  4.])
+\end{lstlisting}
+解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
+
+\subsection*{課題 1.6}
+次の連立1次方程式をガウス・ジョルダン法で解け。
+\begin{equation}
+\begin{cases}
+2x_1 + 3x_2 + 4x_3 + 5x_4 + 6x_5 = 70 \\
+3x_1 + 4x_2 + 5x_3 + 6x_4 + 2x_5 = 60 \\
+4x_1 + 5x_2 + 6x_3 + 2x_4 + 3x_5 = 55 \\
+5x_1 + 6x_2 + 2x_3 + 3x_4 + 4x_5 = 55 \\
+6x_1 + 2x_2 + 3x_3 + 4x_4 + 5x_5 = 60
+\end{cases}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[2, 3, 4, 5, 6],
+...               [3, 4, 5, 6, 2],
+...               [4, 5, 6, 2, 3],
+...               [5, 6, 2, 3, 4],
+...               [6, 2, 3, 4, 5]], dtype=np.float64)
+>>> b = np.array([70, 60, 55, 55, 60], dtype=np.float64)
+>>> gauss_jordan(A, b)
+array([1., 2., 3., 4., 5.])
+\end{lstlisting}
+解析解 $\boldsymbol{x} = [1,\; 2,\; 3,\; 4,\; 5]^T$ と一致。
+
+\subsection*{課題 1.7}
+次の連立方程式を逆行列を使って解け。
+\begin{equation}
+\begin{pmatrix}
+1 & 2 & 1 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{pmatrix}
+\begin{pmatrix}
+x_1 \\
+x_2 \\
+x_3
+\end{pmatrix}
+=
+\begin{pmatrix}
+4 \\
+2 \\
+2
+\end{pmatrix}
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([[1, 2, 1],
+...               [4, 5, 6],
+...               [7, 8, 9]], dtype=np.float64)
+>>> b = np.array([4, 2, 2], dtype=np.float64)
+>>> inverse_matrix(A, b)
+array([-3.,  4., -1.])
+\end{lstlisting}
+解析解 $\boldsymbol{x} = [-3,\; 4,\; -1]^T$ と一致。
+
+\section{結果と考察}
+
+\subsection{収束性と計算量の比較}
+
+4つの解法を実装して、その特性を比較した。ガウス・ザイデル法とSOR法は反復法であるため、初期値の選択と収束条件が結果に大きく影響する。一方、ガウス・ジョルダン法と逆行列による解法は直接法であるため、一定の計算ステップで解が得られる。
+
+ガウス・ザイデル法は収束が遅い場合がある（特に対角優位性が弱い場合）が、SOR法で適切な加速パラメータ$\omega$を選択することで収束速度を大幅に改善できる。ただし、最適な$\omega$を決定する一般的な理論は確立されていないため、問題ごとに調整が必要である。
+
+ガウス・ジョルダン法と逆行列法は計算量が$O(n^3)$で同程度だが、逆行列法は複数の右辺ベクトル$\boldsymbol{b}$に対して効率的に解を求められる利点がある。
+
+\subsection{演習課題の解答}
+
+各課題について、実装したアルゴリズムを用いて数値計算を行い、理論的な解析解と比較した結果、良好な一致を確認した。
+
+\chapter{関数近似}\label{chap:function-approximation}
+
+\section{目標}
+テーラー級数展開による関数近似アルゴリズムを理解し、プログラミングによる問題解決ができる。
+
+\section{理論}
+
+\subsection{テーラー級数展開}
+% テーラー級数展開の説明
+
+\subsection{マクローリン展開}
+% マクローリン展開の説明
+
+\section{演習課題}
+\subsection*{課題 2.1}
+% 課題内容
+
+\subsection*{課題 2.2}
+% 課題内容
+
+\section{実装}
+% 実装コードと説明
+
+\section{結果と考察}
+% 実験結果と精度の検証
+
+\chapter{非線形方程式（代数方程式）の解法}\label{chap:nonlinear-equations}
+
+\section{目標}
+次の2つの数値解法による非線形方程式の逐次解法アルゴリズムが理解でき、プログラミングによる問題解決ができる。
+\begin{itemize}
+    \item ニュートン法による非線形方程式の解法 (Newton method)
+    \item 2分法による非線形方程式の解法 (Bisection method)
+\end{itemize}
+
+\section{理論}
+
+\subsection{ニュートン法}
+% ニュートン法のアルゴリズムと収束条件
+
+\subsection{2分法}
+% 2分法のアルゴリズムと誤差評価
+
+\section{演習課題}
+\subsection*{課題 3.1}
+% 課題内容
+
+\subsection*{課題 3.2}
+% 課題内容
+
+\section{実装}
+% 実装コードと説明
+
+\section{結果と考察}
+% 実験結果と収束性の比較
+
+\chapter{定積分の解法}\label{chap:definite-integrals}
+
+\section{目標}
+次の数値積分のアルゴリズムを理解し、プログラムを書いて問題解決ができる。
+\begin{itemize}
+    \item 区分求積法 (Definite integrals using Rectangles)
+    \item 台形公式 (Trapezoidal Rule)
+    \item シンプソンの公式 (Simpson's Rule)
+    \item 2重積分 (Double integrals) 【応用課題用】
+\end{itemize}
+
+\section{理論}
+
+\subsection{区分求積法}
+% 区分求積法の説明
+
+\subsection{台形公式}
+% 台形公式の説明
+
+\subsection{シンプソンの公式}
+% シンプソンの公式の説明
+
+\subsection{2重積分}
+% 2重積分の説明
+
+\section{演習課題}
+\subsection*{課題 4.1}
+% 課題内容
+
+\subsection*{課題 4.2}
+% 課題内容
+
+\subsection*{課題 4.3}
+% 課題内容
+
+\section{実装}
+% 実装コードと説明
+
+\section{結果と考察}
+% 実験結果と精度の比較
+
+\end{document}
