@@ -19,7 +19,7 @@ make images
 
 ## 手動配置
 
-任意の画像（PNG / JPEG / PDF）をここに置き，
+任意の画像（PNG / JPEG / PDF）をここに置き、
 `main.tex` の中で次のように挿入できます:
 
 ```latex
