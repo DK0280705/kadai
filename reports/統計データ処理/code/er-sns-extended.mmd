@@ -1,0 +1,33 @@
+erDiagram
+    direction LR
+    "ユーザー" ||--o{ "投稿" : "投稿する"
+    "ユーザー" ||--o{ "いいね" : "いいねする"
+    "投稿" ||--o{ "いいね" : "受け取る"
+    "ユーザー" ||--o{ "コメント" : "コメントする"
+    "投稿" ||--o{ "コメント" : "持つ"
+
+    "ユーザー" {
+        int ユーザーID PK
+        string 名前
+        string メールアドレス
+        datetime 作成日時
+    }
+    "投稿" {
+        int 投稿ID PK
+        int ユーザーID FK
+        string 投稿内容
+        datetime 投稿日時
+    }
+    "いいね" {
+        int いいねID PK
+        int ユーザーID FK
+        int 投稿ID FK
+        datetime いいね日時
+    }
+    "コメント" {
+        int コメントID PK
+        int 投稿ID FK
+        int ユーザーID FK
+        string コメント内容
+        datetime コメント日時
+    }

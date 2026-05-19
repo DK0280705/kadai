@@ -84,6 +84,9 @@
 %% URL
 \usepackage{url}
 
+%% Force figure placement with [H]
+\usepackage{float}
+
 %% List customization — control bullet/numbered list labels, spacing, and indentation
 \usepackage{enumitem}
 \setlist[enumerate]{topsep=2pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
@@ -136,7 +139,7 @@
 %% ------------------------------------------------------------
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{\small 数値計算 (前期)}
+\rhead{\small 数値計算 (前期) 1}
 \lhead{\small \nouppercase{\leftmark}}
 \cfoot{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
@@ -157,7 +160,7 @@
 %% Chapter pages — redefine 'plain' to match 'fancy' for consistency
 \fancypagestyle{plain}{
   \fancyhf{}
-  \rhead{\small 数値計算 (前期)}
+  \rhead{\small 数値計算 (前期) 1}
   \lhead{\small \nouppercase{\leftmark}}
   \cfoot{\thepage}
   \renewcommand{\headrulewidth}{0.4pt}
@@ -176,7 +179,7 @@
   linkcolor  = NavyBlue,
   citecolor  = NavyBlue,
   urlcolor   = NavyBlue,
-  pdftitle   = {数値計算 (前期)},
+  pdftitle   = {数値計算 (前期) 1},
   pdfauthor  = {Deka Risman Permana},
   pdfsubject = {Pythonを用いた気温データの統計解析},
   plainpages = false,  % Suppress duplicate page identifier warnings
@@ -264,10 +267,10 @@
   \vspace*{2cm}
 
   {\large 数値計算}\\[0.5em]
-  {\large 前期レポート}\\[2em]
+  {\large 前期中間レポート}\\[2em]
 
   \HRule{}\\[1.5em]
-  {\Huge \textbf{数値計算 (前期)}}\\[0.5em]
+  {\Huge \textbf{数値計算 (前期) 1}}\\[0.5em]
   \HRule{}
 
   \vspace{3cm}
@@ -334,7 +337,7 @@ x_2^{(k)} = \frac{1}{a_{22}}\{b_2 - (a_{21}x_1^{(k)} + a_{23}x_3^{(k-1)} + \cdot
 x_n^{(k)} = \frac{1}{a_{nn}}\{b_n - (a_{n1}x_1^{(k)} + a_{n2}x_2^{(k)} + \cdots + a_{nn-1}x_{n-1}^{(k)})\}
 \end{cases}
 \end{equation}
-とする。ただし、$x_i$の右肩の添え字$(k)$は$k$回繰り返し計算後の$x_i$の近似値を表す。ガウス・ザイデル法は初期値$\boldsymbol{x}^{(0)} = [x_1^{(0)}, x_2^{(0)}, \cdots, x_n^{(0)}]^T$を与えて、この式から$k$回後の近似値$\boldsymbol{x}^{(k)} = [x_1^{(k)}, x_2^{(k)}, x_3^{(k)}, \cdots, x_n^{(k)}]^T$を解析解に収束させようとするアルゴリズムである。
+とする。ただし、$x_i$の右肩の添え字$(k)$は$k$回繰り返し計算後の$x_i$の近似値を表す。ガウス・ザイデル法は初期値$\boldsymbol{x}^{(0)} = [x_1^{(0)}, x_2^{(0)}, \ldots, x_n^{(0)}]^T$を与えて、この式から$k$回後の近似値$\boldsymbol{x}^{(k)} = [x_1^{(k)}, x_2^{(k)}, x_3^{(k)}, \ldots, x_n^{(k)}]^T$を解析解に収束させようとするアルゴリズムである。
 
 \textbf{収束条件：}ガウス・ザイデル法の収束するための十分条件は、
 \begin{equation}
@@ -344,7 +347,7 @@ x_n^{(k)} = \frac{1}{a_{nn}}\{b_n - (a_{n1}x_1^{(k)} + a_{n2}x_2^{(k)} + \cdots 
 \begin{equation}
 \sum_{j=1, i\neq j}^{n} |a_{ij}| < |a_{ii}|
 \end{equation}
-ただし、$i = 1, 2, \cdots, n$である。この式が成り立つならば初期値$\boldsymbol{x}^{(0)}$に関わらず解析解に収束することが知られている。
+ただし、$i = 1, 2, \ldots, n$である。この式が成り立つならば初期値$\boldsymbol{x}^{(0)}$に関わらず解析解に収束することが知られている。
 
 \begin{algorithm}[H]
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル, $\boldsymbol{x}^{(0)} \in \mathbb{R}^{n}$: 初期値, $\varepsilon$: 収束判定値}
@@ -492,9 +495,9 @@ A\boldsymbol{x} = \boldsymbol{b}
 \begin{equation}
 \boldsymbol{x} = A^{-1}\boldsymbol{b}
 \end{equation}
-となる。いま求めたい逆行列を$A^{-1} = [\boldsymbol{x}_1, \boldsymbol{x}_2, \cdots, \boldsymbol{x}_n]$、ただし$\boldsymbol{x}_i \in R^n$とおくと、
+となる。いま求めたい逆行列を$A^{-1} = [\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_n]$、ただし$\boldsymbol{x}_i \in R^n$とおくと、
 \begin{equation}
-A[\boldsymbol{x}_1, \boldsymbol{x}_2, \cdots, \boldsymbol{x}_n] = I, \quad I: \text{単位行列}
+A[\boldsymbol{x}_1, \boldsymbol{x}_2, \ldots, \boldsymbol{x}_n] = I, \quad I: \text{単位行列}
 \end{equation}
 となり、
 \begin{equation}
@@ -502,7 +505,7 @@ A\boldsymbol{x}_1 = \begin{pmatrix} 1 \\ 0 \\ \vdots \\ 0 \\ 0 \end{pmatrix}, \q
 A\boldsymbol{x}_2 = \begin{pmatrix} 0 \\ 1 \\ \vdots \\ 0 \\ 0 \end{pmatrix}, \quad \cdots, \quad
 A\boldsymbol{x}_n = \begin{pmatrix} 0 \\ 0 \\ \vdots \\ 0 \\ 1 \end{pmatrix}
 \end{equation}
-を満たす$\boldsymbol{x}_1, \cdots, \boldsymbol{x}_n$を求める問題となるため、前述のガウス・ジョルダン法と同様に部分ピボット選択 (アルゴリズム3) を適用できる。
+を満たす$\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n$を求める問題となるため、前述のガウス・ジョルダン法と同様に部分ピボット選択 (アルゴリズム3) を適用できる。
 
 \begin{algorithm}[H]
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル}
@@ -548,25 +551,34 @@ $C \leftarrow [A \mid I]$\;
 この実装では、変数$x$を繰り返し更新し、全ての変数が収束条件$\left|\frac{X - x_i}{X}\right| < \varepsilon$を満たすまでループを続ける。初期値は$\boldsymbol{x} = [0, 0]^T$、収束判定値$\varepsilon = 10^{-6}$として計算している。
 
 %% -- 1.3.2 SOR法の実装 --
+\newpage
 \subsection{SOR法の実装}
 
 SOR法はガウス・ザイデル法に加速パラメータ$\omega$を導入した改良版である。アルゴリズムはガウス・ザイデル法と同じだが、計算後に$X \leftarrow x_i + \omega(X - x_i)$の加速ステップが追加される。
 
 \lstinputlisting[language=Python, caption=SOR法の実装]{code/sor.py}
 
-加速パラメータ$\omega$は$0 < \omega < 2$の範囲で選択される。$\omega = 1$のときはガウス・ザイデル法と同じになり、$1 < \omega < 2$のとき加速効果が期待できる。本実装では$\omega = 1.4$として計算している。
+%% -- 1.3.3 部分ピボット選択の実装 --
+\newpage
+\subsection{部分ピボット選択の実装}\label{sec:pivot}
 
-%% -- 1.3.3 ガウス・ジョルダン法の実装 --
+部分ピボット選択は、ガウス・ジョルダン法および逆行列による解法の前処理として用いられる独立したモジュールである。拡大行列$C$を受け取り、各行$k$について$k$列目の$k$行以降の要素の中で絶対値が最大の行をピボット行として選び、$k$行目と交換する。
+
+\lstinputlisting[language=Python, caption=部分ピボット選択の実装]{code/pivot.py}
+
+%% -- 1.3.4 ガウス・ジョルダン法の実装 --
+\newpage
 \subsection{ガウス・ジョルダン法の実装}
 
-ガウス・ジョルダン法は、拡大行列$(A, \boldsymbol{b})$に対して行基本操作を施し、$A$の部分が単位行列になるまで変換する消去法である。本実装では部分ピボット選択を行い、数値的安定性を確保している。
+ガウス・ジョルダン法は、拡大行列$(A, \boldsymbol{b})$に対して行基本操作を施し、$A$の部分が単位行列になるまで変換する消去法である。本実装では、部分ピボット選択は \texttt{configure\_pivot}（\ref{sec:pivot}）により事前に行われることを前提とし、関数内部ではピボット選択を行わず消去計算のみを実行する。
 
 \lstinputlisting[language=Python, caption=ガウス・ジョルダン法の実装]{code/gauss_jordan.py}
 
-%% -- 1.3.4 逆行列による解法の実装 --
+%% -- 1.3.5 逆行列による解法の実装 --
+\newpage
 \subsection{逆行列による解法の実装}
 
-逆行列を用いた解法は、行列$A$の逆行列$A^{-1}$を先に計算し、その後$\boldsymbol{x} = A^{-1}\boldsymbol{b}$により解を求める方法である。逆行列の計算は拡大行列$(A, I)$に対してガウス・ジョルダン法を適用することで行われる。
+逆行列を用いた解法は、行列$A$の逆行列$A^{-1}$を先に計算し、その後$\boldsymbol{x} = A^{-1}\boldsymbol{b}$により解を求める方法である。逆行列の計算は拡大行列$(A, I)$に対してガウス・ジョルダン法を適用することで行われる。本実装でも、部分ピボット選択は \texttt{configure\_pivot}（\ref{sec:pivot}）により事前に行われることを前提としている。
 
 \lstinputlisting[language=Python, caption=逆行列による解法の実装]{code/inverse_matrix.py}
 
@@ -598,6 +610,15 @@ array([ 0.64285714, -0.07142857])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [0.643,\; -0.071]^T$ と一致。
 
+図\ref{fig:task1-1}に各変数の反復回数に対する収束過程を示す。初期値 $\boldsymbol{x}^{(0)} = [0, 0]^T$ から出発し、9回の反復で収束判定値 $\varepsilon = 10^{-6}$ を満たした。$x_1$ は単調に増加、$x_2$ は単調に減少しながら解析解に近づいていることが確認できる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Task_1.1_—_Gauss-Seidel_2×2.pdf}
+    \caption{課題1.1 — ガウス・ザイデル法の収束過程（2×2）}
+    \label{fig:task1-1}
+\end{figure}
+
 %% -- 1.4.2 課題 1.2 --
 \subsection*{課題 1.2}
 次の連立1次方程式をガウス・ザイデル法とSOR法で解け。ただし、このままで収束しないため行を入れ替えるピボット選択が必要である。
@@ -619,6 +640,27 @@ array([-0.66666667,  1.44444444])
 array([-0.66666667,  1.44444444])
 \end{lstlisting}
 いずれも解析解 $\boldsymbol{x} = [-0.667,\; 1.444]^T$ と一致。
+
+図\ref{fig:task1-2}に両手法の収束過程を示す。この問題はもとの係数行列が対角優位でないため、行を入れ替えるピボット選択を施した上で計算している。両手法とも17回の反復で収束し、SOR法（$\omega = 1.4$）ではガウス・ザイデル法に比べて初期の振動がやや大きいものの、同程度の収束速度を示した。
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Task_1.2_—_Gauss-Seidel_2×2_pivoted.pdf}
+        \caption{ガウス・ザイデル法}
+        \label{fig:task1-2-gs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Task_1.2_—_SOR_omega=1.4_2×2_pivoted.pdf}
+        \caption{SOR法 ($\omega = 1.4$)}
+        \label{fig:task1-2-sor}
+    \end{subfigure}
+    \caption{課題1.2 — 収束過程の比較（2×2, ピボット選択後）}
+    \label{fig:task1-2}
+\end{figure}
 
 %% -- 1.4.3 課題 1.3 --
 \subsection*{課題 1.3}
@@ -643,6 +685,27 @@ array([-1., -1.,  4.])
 \end{lstlisting}
 いずれも解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
 
+図\ref{fig:task1-3}に3変数系の収束過程を示す。ガウス・ザイデル法は27回、SOR法は44回の反復で収束した。3変数になると変数間の相互作用が複雑になり、SOR法の加速パラメータ $\omega = 1.4$ はこの問題に対しては必ずしも有効でないことがわかる。$x_3$ が最も早く収束し、$x_1$ と $x_2$ はやや振動しながら収束に向かっている。
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Task_1.3_—_Gauss-Seidel_3×3.pdf}
+        \caption{ガウス・ザイデル法}
+        \label{fig:task1-3-gs}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/Task_1.3_—_SOR_omega=1.4_3×3.pdf}
+        \caption{SOR法 ($\omega = 1.4$)}
+        \label{fig:task1-3-sor}
+    \end{subfigure}
+    \caption{課題1.3 — 収束過程の比較（3×3）}
+    \label{fig:task1-3}
+\end{figure}
+
 \subsection*{課題 1.4}
 次の連立1次方程式をガウス・ジョルダン法で解け。
 \begin{equation}
@@ -655,9 +718,12 @@ x_1 + x_2 + x_3 = 2
 
 \bigskip
 \begin{lstlisting}[language=Python, numbers=none]
+>>> from pivot import configure_pivot
 >>> A = np.array([[2, 1, 1], [0, 2, 1], [1, 1, 1]], dtype=np.float64)
 >>> b = np.array([1, 2, 2], dtype=np.float64)
->>> gauss_jordan(A, b)
+>>> C = configure_pivot(np.column_stack((A, b)))
+>>> A_p, b_p = C[:, :3], C[:, 3]
+>>> gauss_jordan(A_p, b_p)
 array([-1., -1.,  4.])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
@@ -674,9 +740,12 @@ x_1 + x_2 + x_3 = 2
 
 \bigskip
 \begin{lstlisting}[language=Python, numbers=none]
+>>> from pivot import configure_pivot
 >>> A = np.array([[2, 1, 1], [0, 2, 1], [1, 1, 1]], dtype=np.float64)
 >>> b = np.array([1, 2, 2], dtype=np.float64)
->>> gauss_jordan(A, b)
+>>> C = configure_pivot(np.column_stack((A, b)))
+>>> A_p, b_p = C[:, :3], C[:, 3]
+>>> gauss_jordan(A_p, b_p)
 array([-1., -1.,  4.])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
@@ -695,13 +764,16 @@ array([-1., -1.,  4.])
 
 \bigskip
 \begin{lstlisting}[language=Python, numbers=none]
+>>> from pivot import configure_pivot
 >>> A = np.array([[2, 3, 4, 5, 6],
 ...               [3, 4, 5, 6, 2],
 ...               [4, 5, 6, 2, 3],
 ...               [5, 6, 2, 3, 4],
 ...               [6, 2, 3, 4, 5]], dtype=np.float64)
 >>> b = np.array([70, 60, 55, 55, 60], dtype=np.float64)
->>> gauss_jordan(A, b)
+>>> C = configure_pivot(np.column_stack((A, b)))
+>>> A_p, b_p = C[:, :5], C[:, 5]
+>>> gauss_jordan(A_p, b_p)
 array([1., 2., 3., 4., 5.])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [1,\; 2,\; 3,\; 4,\; 5]^T$ と一致。
@@ -729,28 +801,21 @@ x_3
 
 \bigskip
 \begin{lstlisting}[language=Python, numbers=none]
+>>> from pivot import configure_pivot
 >>> A = np.array([[1, 2, 1],
 ...               [4, 5, 6],
 ...               [7, 8, 9]], dtype=np.float64)
 >>> b = np.array([4, 2, 2], dtype=np.float64)
->>> inverse_matrix(A, b)
+>>> C = configure_pivot(np.column_stack((A, b)))
+>>> A_p, b_p = C[:, :3], C[:, 3]
+>>> inverse_matrix(A_p, b_p)
 array([-3.,  4., -1.])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [-3,\; 4,\; -1]^T$ と一致。
 
-\section{結果と考察}
+\section{考察}
 
 \subsection{収束性と計算量の比較}
-
-4つの解法を実装して、その特性を比較した。ガウス・ザイデル法とSOR法は反復法であるため、初期値の選択と収束条件が結果に大きく影響する。一方、ガウス・ジョルダン法と逆行列による解法は直接法であるため、一定の計算ステップで解が得られる。
-
-ガウス・ザイデル法は収束が遅い場合がある（特に対角優位性が弱い場合）が、SOR法で適切な加速パラメータ$\omega$を選択することで収束速度を大幅に改善できる。ただし、最適な$\omega$を決定する一般的な理論は確立されていないため、問題ごとに調整が必要である。
-
-ガウス・ジョルダン法と逆行列法は計算量が$O(n^3)$で同程度だが、逆行列法は複数の右辺ベクトル$\boldsymbol{b}$に対して効率的に解を求められる利点がある。
-
-\subsection{演習課題の解答}
-
-各課題について、実装したアルゴリズムを用いて数値計算を行い、理論的な解析解と比較した結果、良好な一致を確認した。
 
 \chapter{関数近似}\label{chap:function-approximation}
 
@@ -775,78 +840,7 @@ array([-3.,  4., -1.])
 \section{実装}
 % 実装コードと説明
 
-\section{結果と考察}
+\section{考察}
 % 実験結果と精度の検証
-
-\chapter{非線形方程式（代数方程式）の解法}\label{chap:nonlinear-equations}
-
-\section{目標}
-次の2つの数値解法による非線形方程式の逐次解法アルゴリズムが理解でき、プログラミングによる問題解決ができる。
-\begin{itemize}
-    \item ニュートン法による非線形方程式の解法 (Newton method)
-    \item 2分法による非線形方程式の解法 (Bisection method)
-\end{itemize}
-
-\section{理論}
-
-\subsection{ニュートン法}
-% ニュートン法のアルゴリズムと収束条件
-
-\subsection{2分法}
-% 2分法のアルゴリズムと誤差評価
-
-\section{演習課題}
-\subsection*{課題 3.1}
-% 課題内容
-
-\subsection*{課題 3.2}
-% 課題内容
-
-\section{実装}
-% 実装コードと説明
-
-\section{結果と考察}
-% 実験結果と収束性の比較
-
-\chapter{定積分の解法}\label{chap:definite-integrals}
-
-\section{目標}
-次の数値積分のアルゴリズムを理解し、プログラムを書いて問題解決ができる。
-\begin{itemize}
-    \item 区分求積法 (Definite integrals using Rectangles)
-    \item 台形公式 (Trapezoidal Rule)
-    \item シンプソンの公式 (Simpson's Rule)
-    \item 2重積分 (Double integrals) 【応用課題用】
-\end{itemize}
-
-\section{理論}
-
-\subsection{区分求積法}
-% 区分求積法の説明
-
-\subsection{台形公式}
-% 台形公式の説明
-
-\subsection{シンプソンの公式}
-% シンプソンの公式の説明
-
-\subsection{2重積分}
-% 2重積分の説明
-
-\section{演習課題}
-\subsection*{課題 4.1}
-% 課題内容
-
-\subsection*{課題 4.2}
-% 課題内容
-
-\subsection*{課題 4.3}
-% 課題内容
-
-\section{実装}
-% 実装コードと説明
-
-\section{結果と考察}
-% 実験結果と精度の比較
 
 \end{document}

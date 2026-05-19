@@ -1,6 +1,7 @@
 from numpy.typing import NDArray
 import numpy as np
 
+
 def inverse_matrix(
     A: NDArray[np.float64],
     b: NDArray[np.float64],
@@ -10,18 +11,8 @@ def inverse_matrix(
     n = A.shape[0]
     x = np.zeros(n)
 
-    # Basically the same as gauss_jordan, but we use identity matrix instead of b
     C = np.column_stack((A, np.identity(n)))
     for k in range(n):
-        pivot_row = k
-        max_val = abs(C[k, k])
-        for i in range(k + 1, n):
-            if abs(C[i, k]) > max_val:
-                max_val = abs(C[i, k])
-                pivot_row = i
-        if pivot_row != k:
-            C[[k, pivot_row]] = C[[pivot_row, k]]
-
         c_dash = C[k, k]
         for j in range(k, 2 * n):
             C[k, j] /= c_dash
