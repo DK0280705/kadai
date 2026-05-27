@@ -70,8 +70,11 @@
 %% Professional table rules — \toprule, \midrule, \bottomrule instead of \hline
 \usepackage{booktabs}
 
+%% Circuitry diagrams — draw electrical circuits with \begin{circuitikz} ... \end{circuitikz}
+\usepackage{circuitikz}
+
 %% Algorithms — pseudocode in a mathematical style
-\usepackage[plain,boxed,noend]{algorithm2e}
+\usepackage[plain,ruled,noend]{algorithm2e}
 \SetKwInOut{KwIn}{入力}
 \SetKwInOut{KwOut}{出力}
 \SetKwComment{Comment}{// }{}
@@ -79,6 +82,7 @@
 \SetKwIF{If}{ElseIf}{Else}{if}{then}{else if}{else}{end if}
 %% Reduce algorithm top/bottom margins
 \SetAlgoSkip{medskip}
+\SetAlgorithmName{アルゴリズム}{アルゴリズム}{アルゴリズム一覧}
 
 
 %% URL
@@ -121,7 +125,7 @@
   breakatwhitespace= false,
   showstringspaces = false,
   tabsize          = 4,
-  captionpos       = b,
+  captionpos       = t,
   xleftmargin      = 2em,
   framexleftmargin = 1.5em,
 }
@@ -350,6 +354,7 @@ x_n^{(k)} = \frac{1}{a_{nn}}\{b_n - (a_{n1}x_1^{(k)} + a_{n2}x_2^{(k)} + \cdots 
 ただし、$i = 1, 2, \ldots, n$である。この式が成り立つならば初期値$\boldsymbol{x}^{(0)}$に関わらず解析解に収束することが知られている。
 
 \begin{algorithm}[H]
+\caption{ガウス・ザイデル法}
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル, $\boldsymbol{x}^{(0)} \in \mathbb{R}^{n}$: 初期値, $\varepsilon$: 収束判定値}
 \KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
 \BlankLine
@@ -393,6 +398,7 @@ $n$元の連立1次方程式をガウス・ザイデル法で解くには収束�
 とした方法である。収束の速さは加速パラメータ$\omega$の選び方による。$\omega = 1$のときはガウス・ザイデル法と同じである。最適な$\omega$を定める一般的な理論はまだ確立されていない。
 
 \begin{algorithm}[H]
+\caption{SOR法}
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル, $\boldsymbol{x}^{(0)} \in \mathbb{R}^{n}$: 初期値, $\omega$: 加速パラメータ ($0 < \omega < 2$), $\varepsilon$: 収束判定値}
 \KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
 \BlankLine
@@ -441,6 +447,7 @@ a_{n1} & a_{n2} & \cdots & a_{nn}
 以下のアルゴリズムは部分ピボット選択の手続きである。これはガウス・ジョルダン法および逆行列による解法の両方で用いられる。
 
 \begin{algorithm}[H]
+\caption{部分ピボット選択}
 \KwIn{$C \in \mathbb{R}^{n \times m}$: 拡大行列, $k$: 現在の段階}
 \KwOut{$C \in \mathbb{R}^{n \times m}$: 行交換後の拡大行列}
 \BlankLine
@@ -454,16 +461,15 @@ $p \leftarrow k$\;
   $C_k \leftrightarrow C_p$\;
 }
 \Return{$C$}
-\caption{部分ピボット選択 (Partial Pivoting)}
 \end{algorithm}
 
 \begin{algorithm}[H]
+\caption{ガウス・ジョルダン法}
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル}
 \KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
 \BlankLine
 $C \leftarrow [A \mid \boldsymbol{b}]$\;
 \For{$k \leftarrow 1$ \KwTo $n$}{
-  $C \leftarrow \text{PartialPivot}(C, k)$\;
   $c' \leftarrow c_{kk}$\;
   \For{$j \leftarrow k$ \KwTo $n+1$}{
     $c_{kj} \leftarrow c_{kj}/c'$\;
@@ -481,7 +487,6 @@ $C \leftarrow [A \mid \boldsymbol{b}]$\;
   $x_i \leftarrow c_{i,\,n+1}$\;
 }
 \Return{$\boldsymbol{x}$}
-\caption{ガウス・ジョルダン法}
 \end{algorithm}
 
 %% -- 1.2.4 逆行列による解法 --
@@ -508,6 +513,7 @@ A\boldsymbol{x}_n = \begin{pmatrix} 0 \\ 0 \\ \vdots \\ 0 \\ 1 \end{pmatrix}
 を満たす$\boldsymbol{x}_1, \ldots, \boldsymbol{x}_n$を求める問題となるため、前述のガウス・ジョルダン法と同様に部分ピボット選択 (アルゴリズム3) を適用できる。
 
 \begin{algorithm}[H]
+\caption{逆行列による解法}
 \KwIn{$A \in \mathbb{R}^{n \times n}$: 係数行列, $\boldsymbol{b} \in \mathbb{R}^{n}$: 定数ベクトル}
 \KwOut{$\boldsymbol{x} \in \mathbb{R}^{n}$: 近似解}
 \BlankLine
@@ -534,7 +540,6 @@ $C \leftarrow [A \mid I]$\;
   }
 }
 \Return{$\boldsymbol{x}$}
-\caption{逆行列による解法}
 \end{algorithm}
 
 \newpage
@@ -641,25 +646,20 @@ array([-0.66666667,  1.44444444])
 \end{lstlisting}
 いずれも解析解 $\boldsymbol{x} = [-0.667,\; 1.444]^T$ と一致。
 
-図\ref{fig:task1-2}に両手法の収束過程を示す。この問題はもとの係数行列が対角優位でないため、行を入れ替えるピボット選択を施した上で計算している。両手法とも17回の反復で収束し、SOR法（$\omega = 1.4$）ではガウス・ザイデル法に比べて初期の振動がやや大きいものの、同程度の収束速度を示した。
+図\ref{fig:task1-2-gs}・\ref{fig:task1-2-sor}に両手法の収束過程を示す。この問題はもとの係数行列が対角優位でないため、行を入れ替えるピボット選択を施した上で計算している。両手法とも17回の反復で収束し、SOR法（$\omega = 1.4$）ではガウス・ザイデル法に比べて初期の振動がやや大きいものの、同程度の収束速度を示した。
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Task_1.2_—_Gauss-Seidel_2×2_pivoted.pdf}
-        \caption{ガウス・ザイデル法}
-        \label{fig:task1-2-gs}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Task_1.2_—_SOR_omega=1.4_2×2_pivoted.pdf}
-        \caption{SOR法 ($\omega = 1.4$)}
-        \label{fig:task1-2-sor}
-    \end{subfigure}
-    \caption{課題1.2 — 収束過程の比較（2×2, ピボット選択後）}
-    \label{fig:task1-2}
+    \includegraphics[width=0.85\textwidth]{images/Task_1.2_—_Gauss-Seidel_2×2_pivoted.pdf}
+    \caption{課題1.2 — ガウス・ザイデル法の収束過程（2×2, ピボット選択後）}
+    \label{fig:task1-2-gs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Task_1.2_—_SOR_omega=1.4_2×2_pivoted.pdf}
+    \caption{課題1.2 — SOR法の収束過程（2×2, ピボット選択後, $\omega = 1.4$）}
+    \label{fig:task1-2-sor}
 \end{figure}
 
 %% -- 1.4.3 課題 1.3 --
@@ -685,25 +685,20 @@ array([-1., -1.,  4.])
 \end{lstlisting}
 いずれも解析解 $\boldsymbol{x} = [-1,\; -1,\; 4]^T$ と一致。
 
-図\ref{fig:task1-3}に3変数系の収束過程を示す。ガウス・ザイデル法は27回、SOR法は44回の反復で収束した。3変数になると変数間の相互作用が複雑になり、SOR法の加速パラメータ $\omega = 1.4$ はこの問題に対しては必ずしも有効でないことがわかる。$x_3$ が最も早く収束し、$x_1$ と $x_2$ はやや振動しながら収束に向かっている。
+図\ref{fig:task1-3-gs}・\ref{fig:task1-3-sor}に3変数系の収束過程を示す。ガウス・ザイデル法は27回、SOR法は44回の反復で収束した。3変数になると変数間の相互作用が複雑になり、SOR法の加速パラメータ $\omega = 1.4$ はこの問題に対しては必ずしも有効でないことがわかる。$x_3$ が最も早く収束し、$x_1$ と $x_2$ はやや振動しながら収束に向かっている。
 
 \begin{figure}[H]
     \centering
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Task_1.3_—_Gauss-Seidel_3×3.pdf}
-        \caption{ガウス・ザイデル法}
-        \label{fig:task1-3-gs}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}{0.48\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/Task_1.3_—_SOR_omega=1.4_3×3.pdf}
-        \caption{SOR法 ($\omega = 1.4$)}
-        \label{fig:task1-3-sor}
-    \end{subfigure}
-    \caption{課題1.3 — 収束過程の比較（3×3）}
-    \label{fig:task1-3}
+    \includegraphics[width=0.85\textwidth]{images/Task_1.3_—_Gauss-Seidel_3×3.pdf}
+    \caption{課題1.3 — ガウス・ザイデル法の収束過程（3×3）}
+    \label{fig:task1-3-gs}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Task_1.3_—_SOR_omega=1.4_3×3.pdf}
+    \caption{課題1.3 — SOR法の収束過程（3×3, $\omega = 1.4$）}
+    \label{fig:task1-3-sor}
 \end{figure}
 
 \subsection*{課題 1.4}
@@ -813,9 +808,222 @@ array([-3.,  4., -1.])
 \end{lstlisting}
 解析解 $\boldsymbol{x} = [-3,\; 4,\; -1]^T$ と一致。
 
+\subsection*{応用課題 1.9}
+図\ref{fig:circuit-1-9} のような直流電圧 $E_1 = 100[\mathrm{V}]$、$E_2 = 100[\mathrm{V}]$、
+抵抗 $R = 1[\Omega]$ から構成された回路網がある．各節点の電圧 $V_1, V_2, \cdots, V_{12}$ をガウス・ザイデル法と逆行列の２つの解法を使って解け．\\[0.5em]
+(解は $V = [39.785,\allowbreak\ 48.387,\allowbreak\ 39.785,\allowbreak\ 10.753,\allowbreak\ 13.978,\allowbreak\ 10.753,\allowbreak\ {-10.753},\allowbreak\ {-13.978},\allowbreak\ {-10.753},\allowbreak\ {-39.785},\allowbreak\ {-48.387},\allowbreak\ {-39.785}]^T$)
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[american resistors]
+    
+    % ==========================================
+    % 1. OUTER FRAME & GROUND
+    % ==========================================
+    % Ground at the bottom center
+    \draw (4,0) node[ground] {};
+    \node[right=0.3cm] at (4,0) {$0[\mathrm{V}]$};
+    
+    % Outer loop frame lines
+    \draw (4,0) -- (0,0) -- (0,10.5) -- (4,10.5);
+    \draw (4,0) -- (8,0) -- (8,10.5) -- (4,10.5);
+    
+    % ==========================================
+    % 2. VOLTAGE SOURCES (BATTERIES)
+    % ==========================================
+    % Bottom Battery (E1) - drawn top-to-bottom for correct polarity orientation
+    \draw (4,1.5) to[battery1] (4,0);
+    \node[right=0.3cm] at (4,0.75) {$E_1 = 100[\mathrm{V}]$};
+    \draw (4,0) node[circ] {}; % Junction dot at the bottom frame
+    
+    % Top Battery (E2) - drawn top-to-bottom for correct polarity orientation
+    \draw (4,10.5) to[battery1] (4,9.0);
+    \node[right=0.3cm] at (4,9.75) {$E_2 = 100[\mathrm{V}]$};
+    \draw (4,10.5) node[circ] {}; % Junction dot at the top frame
+
+    % ==========================================
+    % 3. HORIZONTAL ROWS (RESISTORS)
+    % ==========================================
+    % Row 1 (y = 3.0)
+    \draw (0,3.0) node[circ] {} to[R] (2,3.0) to[R] (4,3.0) to[R] (6,3.0) to[R] (8,3.0) node[circ] {};
+    
+    % Row 2 (y = 4.5)
+    \draw (0,4.5) node[circ] {} to[R] (2,4.5) to[R] (4,4.5) to[R] (6,4.5) to[R] (8,4.5) node[circ] {};
+    
+    % Row 3 (y = 6.0)
+    \draw (0,6.0) node[circ] {} to[R] (2,6.0) to[R] (4,6.0) to[R] (6,6.0) to[R] (8,6.0) node[circ] {};
+    
+    % Row 4 (y = 7.5)
+    \draw (0,7.5) node[circ] {} to[R] (2,7.5) to[R] (4,7.5) to[R] (6,7.5) to[R] (8,7.5) node[circ] {};
+
+    % ==========================================
+    % 4. VERTICAL COLUMNS (RESISTORS)
+    % ==========================================
+    % Central distribution dots for the converging vertical lines
+    \draw (4,1.5) node[circ] {};
+    \draw (4,9.0) node[circ] {};
+
+    % Column 1 (x = 2)
+    \draw (4,1.5) -- (2,1.5) to[R] (2,3.0) to[R] (2,4.5) to[R] (2,6.0) to[R] (2,7.5) to[R] (2,9.0) -- (4,9.0);
+    
+    % Column 2 (x = 4)
+    \draw (4,1.5) to[R] (4,3.0) to[R] (4,4.5) to[R] (4,6.0) to[R] (4,7.5) to[R] (4,9.0);
+    
+    % Column 3 (x = 6)
+    \draw (4,1.5) -- (6,1.5) to[R] (6,3.0) to[R] (6,4.5) to[R] (6,6.0) to[R] (6,7.5) to[R] (6,9.0) -- (4,9.0);
+    
+    % Specific label for the top-right resistor
+    \node[right=0.2cm] at (6,8.25) {$R = 1[\Omega]$};
+
+    % ==========================================
+    % 5. NODE VOLTAGE LABELS (V1 to V12)
+    % ==========================================
+    % Row 1
+    \node[below right] at (2,3.0) {$V_1$};
+    \node[below right] at (4,3.0) {$V_2$};
+    \node[below right] at (6,3.0) {$V_3$};
+    
+    % Row 2
+    \node[below right] at (2,4.5) {$V_4$};
+    \node[below right] at (4,4.5) {$V_5$};
+    \node[below right] at (6,4.5) {$V_6$};
+    
+    % Row 3
+    \node[below right] at (2,6.0) {$V_7$};
+    \node[below right] at (4,6.0) {$V_8$};
+    \node[below right] at (6,6.0) {$V_9$};
+    
+    % Row 4
+    \node[below right] at (2,7.5) {$V_{10}$};
+    \node[below right] at (4,7.5) {$V_{11}$};
+    \node[below right] at (6,7.5) {$V_{12}$};
+
+    % ==========================================
+    % 6. CAPTION (Optional)
+    % ==========================================
+    % Uncomment the line below if your TeX engine supports Japanese characters:
+    % \node[below] at (4,-0.8) {図2.2 応用課題1.9の回路図};
+
+\end{circuitikz}
+\caption{応用課題1.9の回路図}
+\label{fig:circuit-1-9}
+\end{figure}
+
+回路の各節点にキルヒホッフの電流則 (KCL) を適用して12元連立1次方程式を導出する。
+全抵抗 $R = 1[\Omega]$ のためコンダクタンス $G = 1/R = 1[\mathrm{S}]$ である。
+外枠は接地 ($0[\mathrm{V}]$) に接続され、電源 $E_1$ により $(4, 1.5)$ の電位は $+100[\mathrm{V}]$、
+$E_2$ により $(4, 9.0)$ の電位は $-100[\mathrm{V}]$ となる。
+
+各節点において、接続する抵抗を流れる電流の和がゼロとなる条件を書くと：
+
+\begin{equation}
+\begin{cases}
+4V_1 - V_2 - V_4 = 100 \\
+4V_2 - V_1 - V_3 - V_5 = 100 \\
+4V_3 - V_2 - V_6 = 100 \\
+4V_4 - V_1 - V_5 - V_7 = 0 \\
+4V_5 - V_2 - V_4 - V_6 - V_8 = 0 \\
+4V_6 - V_3 - V_5 - V_9 = 0 \\
+4V_7 - V_4 - V_8 - V_{10} = 0 \\
+4V_8 - V_5 - V_7 - V_9 - V_{11} = 0 \\
+4V_9 - V_6 - V_8 - V_{12} = 0 \\
+4V_{10} - V_7 - V_{11} = -100 \\
+4V_{11} - V_8 - V_{10} - V_{12} = -100 \\
+4V_{12} - V_9 - V_{11} = -100
+\end{cases}
+\end{equation}
+
+これを係数行列 $A$ と定数ベクトル $\boldsymbol{b}$ の形 $A\boldsymbol{V} = \boldsymbol{b}$ に整理し、
+ガウス・ザイデル法および逆行列による解法の2手法で解を求める。
+
+行列 $A$ は各行の対角要素が $4$、非対角要素が $-1$（隣接節点に対応）の疎行列である。
+対角優位性は $|a_{ii}| = 4 \geq \sum_{j \neq i}|a_{ij}|$（$V_5, V_8$ では等号成立）であり、
+十分条件は厳密には満たさないが、本行列は正定値対称であるためガウス・ザイデル法は収束する。
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> A = np.array([
+...     [ 4, -1,  0, -1,  0,  0,  0,  0,  0,  0,  0,  0],
+...     [-1,  4, -1,  0, -1,  0,  0,  0,  0,  0,  0,  0],
+...     [ 0, -1,  4,  0,  0, -1,  0,  0,  0,  0,  0,  0],
+...     [-1,  0,  0,  4, -1,  0, -1,  0,  0,  0,  0,  0],
+...     [ 0, -1,  0, -1,  4, -1,  0, -1,  0,  0,  0,  0],
+...     [ 0,  0, -1,  0, -1,  4,  0,  0, -1,  0,  0,  0],
+...     [ 0,  0,  0, -1,  0,  0,  4, -1,  0, -1,  0,  0],
+...     [ 0,  0,  0,  0, -1,  0, -1,  4, -1,  0, -1,  0],
+...     [ 0,  0,  0,  0,  0, -1,  0, -1,  4,  0,  0, -1],
+...     [ 0,  0,  0,  0,  0,  0, -1,  0,  0,  4, -1,  0],
+...     [ 0,  0,  0,  0,  0,  0,  0, -1,  0, -1,  4, -1],
+...     [ 0,  0,  0,  0,  0,  0,  0,  0, -1,  0, -1,  4]],
+...     dtype=np.float64)
+>>> b = np.array([100, 100, 100, 0, 0, 0, 0, 0, 0, -100, -100, -100],
+...     dtype=np.float64)
+
+>>> x0 = np.zeros(12)
+>>> V_gs = gauss_seidel(A, b, x0, epsilon=1e-6)
+>>> V_gs
+array([ 39.784954,  48.387105,  39.784951,  10.752698,  13.978505,
+        10.752694, -10.752681, -13.978487, -10.752684, -39.784943,
+       -48.387093, -39.784944])
+
+>>> C = configure_pivot(np.column_stack((A, b)))
+>>> A_p, b_p = C[:, :12], C[:, 12]
+>>> V_inv = inverse_matrix(A_p, b_p)
+>>> V_inv
+array([ 39.784946,  48.387097,  39.784946,  10.752688,  13.978495,
+        10.752688, -10.752688, -13.978495, -10.752688, -39.784946,
+       -48.387097, -39.784946])
+\end{lstlisting}
+
+いずれの解法でも提示された解析解と一致する結果が得られた。図\ref{fig:task1-9}にガウス・ザイデル法による収束過程を示す。全ての変数が単調に収束していることが確認できる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_1.9_—_Gauss-Seidel_12×12_circuit.pdf}
+    \caption{課題1.9 — ガウス・ザイデル法の収束過程（12×12 回路網）}
+    \label{fig:task1-9}
+\end{figure}
+
 \section{考察}
 
-\subsection{収束性と計算量の比較}
+本章では、連立1次方程式の4つの数値解法（ガウス・ザイデル法、SOR法、ガウス・ジョルダン法、逆行列による解法）を実装し、その収束特性を比較した。課題1.1ではガウス・ザイデル法により9回の反復で解析解$\boldsymbol{x} = [0.643,\; -0.071]^T$と一致する結果を得た。課題1.4〜1.6ではガウス・ジョルダン法を、課題1.7では逆行列による解法を適用し、いずれも解析解と完全に一致する結果が得られた。これらの消去法では部分ピボット選択を適用することで、ゼロ割りの回避と丸め誤差の抑制が適切に行われたことが確認できる。
+
+課題1.3において、ガウス・ザイデル法は27回の反復で収束したのに対し、SOR法（$\omega = 1.4$）は44回を要した。
+
+SOR法の収束速度は加速パラメータ$\omega$の選択に強く依存する。SOR法の反復行列のスペクトル半径を$\rho(G_\omega)$とすると、最適な$\omega$は
+\begin{equation}
+\omega_{\text{opt}} = \frac{2}{1 + \sqrt{1 - \rho(B)^2}}
+\end{equation}
+で与えられる~\cite{young1971}。ここで$\rho(B) = \max_i |\lambda_i(B)|$はヤコビ法の反復行列$B$のスペクトル半径（固有値の絶対値の最大値）である。$\omega < \omega_{\text{opt}}$のとき収束は遅く、$\omega > \omega_{\text{opt}}$のときは過剰加速により解の周りで振動が生じ、かえって収束が遅延する。
+
+課題1.3の係数行列
+\begin{equation}
+A = \begin{pmatrix}
+2 & 1 & 1 \\
+0 & 2 & 1 \\
+1 & 1 & 1
+\end{pmatrix}
+\end{equation}
+に対して、ヤコビ法の反復行列 $B = I - D^{-1}A$ のスペクトル半径を計算すると
+$\rho(B) \approx 1.107$ となる。$\rho(B) > 1$ であるため、ヤコビ法はそもそも収束せず、
+Youngの公式~\cite{young1971} による $\omega_{\text{opt}}$ は実数として存在しない（平方根内が負になる）。
+したがって $\omega = 1.4$ は過剰加速の領域にあり、実際、図\ref{fig:task1-3-gs}と図\ref{fig:task1-3-sor}を比較すると、SOR法では$x_1$と$x_2$に大きな振動が初期段階で生じており、これが収束までの反復回数を増大させた。この場合、$\omega = 1$（ガウス・ザイデル法）が実質的な最良選択となる。
+
+一方、課題1.2では両手法とも17回で収束し、性能差は見られなかった。これはピボット選択後の係数行列
+\begin{equation}
+A' = \begin{pmatrix}
+5 & 3 \\
+4 & 6
+\end{pmatrix}
+\end{equation}
+が強い対角優位性を持ち、$\omega = 1.4$が最適値に近かったためである。
+
+応用課題1.9では12元の回路網問題に対してガウス・ザイデル法と逆行列による解法の2手法を適用した。いずれの解法でも解析解と小数点以下3桁まで一致する結果が得られた。ガウス・ザイデル法の収束後の残差は$\|\boldsymbol{b} - A\boldsymbol{V}\| \approx 2.6 \times 10^{-5}$、逆行列による解法では$\approx 1.0 \times 10^{-13}$であり、消去法が反復法より高精度な解を与えることが確認された。解には回路の対称性を反映した$V_1 = V_3$, $V_{10} = -V_3$などの対称・逆対称関係が数値的にも確認でき、物理的解釈との整合性が得られた。
+
+反復法（ガウス・ザイデル法、SOR法）と消去法（ガウス・ジョルダン法、逆行列による解法）には以下のような特徴がある。反復法は大規模な疎行列に対して有効であり、メモリ使用量が少なく、近似解を段階的に得られる利点がある。反復法の1回あたりの計算量は$O(n^2)$である。一方で、収束には行列が対角優位であること（または正定値対称であること）が要求され、適切な加速パラメータの選択が必要となる。消去法は小〜中規模の密行列に対して有限回の演算で厳密解（丸め誤差の範囲内で）を得られるが、計算量は$O(n^3)$であり、大規模問題には不向きである。
+
+本実験を通じて、数値解法の選択には問題の規模・行列の性質・要求される精度を総合的に考慮する必要があることが確認された。
+
 
 \chapter{関数近似}\label{chap:function-approximation}
 
@@ -823,24 +1031,172 @@ array([-3.,  4., -1.])
 テーラー級数展開による関数近似アルゴリズムを理解し、プログラミングによる問題解決ができる。
 
 \section{理論}
-
-\subsection{テーラー級数展開}
-% テーラー級数展開の説明
-
-\subsection{マクローリン展開}
-% マクローリン展開の説明
-
-\section{演習課題}
-\subsection*{課題 2.1}
-% 課題内容
-
-\subsection*{課題 2.2}
-% 課題内容
+関数$f(x)$が点$x=x_0$で無限回微分可能ならば、$x_0$の近傍で
+\begin{equation}\label{eq:taylor}
+\begin{split}
+f(x) &= f(x_0) + f'(x_0)(x - x_0) + \frac{f^{(2)}(x_0)}{2!}(x - x_0)^2 + \frac{f^{(3)}(x_0)}{3!}(x - x_0)^3 + \cdots \\
+&= \sum_{k=0}^{\infty}\frac{f^{(k)}(x_0)}{k!}(x - x_0)^k
+\end{split}
+\end{equation}
+と無限級数で表現できる。これをテーラー級数展開という。特に$x_0 = 0$のとき
+\begin{equation}\label{eq:macraulin}
+f(x) = \sum_{k=0}^{\infty}\frac{f^{(k)}(0)}{k!}(x)^k
+\end{equation}
+となり、マクローリン展開という。\ref{eq:taylor}式を有限個の項$(k = n)$次で打ち切って近似した式
+\begin{equation}
+f(x) \approx \sum_{k=0}^{n}\frac{f^{(k)}(x_0)}{k!}(x - x_0)^k
+\end{equation}
+をテーラー級数展開近似という。
 
 \section{実装}
-% 実装コードと説明
+テーラー係数 $c_k = f^{(k)}(x_0)/k!$ を数値的に求める手法として、差分商 (Newton's divided differences)~\cite{wikipedia_dd} を用いる。式\ref{eq:taylor}を $c_k = f^{(k)}(x_0)/k!$ とおくと、
+\begin{equation}
+f(x) = c_0 + c_1(x - x_0) + c_2(x - x_0)^2 + \cdots + c_n (x - x_0)^n
+\end{equation}
+となる。係数 $c_k$ を求めるため、$x_0$ の近傍に等間隔 $h$ で $n+1$ 個の点
+\begin{equation}
+x_i = x_0 + i h, \quad i = 0, 1, \ldots, n
+\end{equation}
+をとり、その関数値から $k$ 階差分商を漸化的に定義する：
+\begin{equation}\label{eq:divided-diff}
+\begin{split}
+f[x_i] &= f(x_i), \\
+f[x_{i-k}, \ldots, x_i] &= \frac{f[x_{i-k+1}, \ldots, x_i] - f[x_{i-k}, \ldots, x_{i-1}]}{x_i - x_{i-k}}.
+\end{split}
+\end{equation}
+(\ref{eq:divided-diff})式は、$k=1$ のとき
+\begin{equation}
+f[x_{i-1}, x_i] = \frac{f(x_i) - f(x_{i-1})}{h}
+\end{equation}
+であり、テーラー展開 $f(x_i) = f(x_{i-1}) + h f'(x_{i-1}) + \frac{h^2}{2} f''(x_{i-1}) + \cdots$ を代入すると
+\begin{equation}
+f[x_{i-1}, x_i] = f'(x_{i-1}) + O(h) \approx f'(x_{i-1})
+\end{equation}
+となる。一般に $k$ 階差分商は
+\begin{equation}
+f[x_{i-k}, \ldots, x_i] \approx \frac{f^{(k)}(x_0)}{k!} = c_k
+\end{equation}
+を満たすため、$n+1$ 点から計算した差分商がそのままテーラー係数の近似となる。
+
+本実装では、これを効率的に行うため、配列 \texttt{c} に関数値 $f(x_0), f(x_1), \ldots, f(x_n)$ を初期値として格納し、(\ref{eq:divided-diff})式に従って $j = 1, 2, \ldots, n$ の順に後方から逐次更新する。
+
+\begin{algorithm}[H]
+\caption{Taylor係数の数値計算（Newton差分商）}
+\KwIn{$f$: 対象関数, $x_0 \in \mathbb{R}$: 展開中心, $n \in \mathbb{N}$: 展開次数, $h \in \mathbb{R}$: サンプル間隔}
+\KwOut{$\boldsymbol{c} \in \mathbb{R}^{n+1}$: $c_k \approx f^{(k)}(x_0)/k!$\ $(k = 0,1,2,\ldots,n)$ となる近似係数}
+\BlankLine
+\For{$i \leftarrow 0$ \KwTo $n$}{
+  $c_i \leftarrow f(x_0 + i \cdot h)$\;
+}
+\For{$j \leftarrow 1$ \KwTo $n$}{
+  \For{$i \leftarrow n$ \KwTo $j$}{
+    $c_i \leftarrow (c_i - c_{i-1}) \,/\, (j \cdot h)$\;
+  }
+}
+\Return{$\boldsymbol{c} = [c_0, c_1, \ldots, c_n]^T$}
+\end{algorithm}
+
+\lstinputlisting[language=Python, caption=テーラー級数展開の数値計算（taylor\_series.py）, label={code:taylor-series}]{code/taylor_series.py}
+ソースコード\ref{code:taylor-series}で求めた係数を用いてグラフを描画するコードを以下に示す。
+\lstinputlisting[language=Python, caption=テーラー級数展開のプロット（taylor\_plot.py）]{code/taylor_plot.py}
+
+\section{演習課題}
+
+\subsection*{課題 1.8}
+$f(x) = e^x$ をマクローリン展開（$x_0 = 0$）し、近似次数の違いによるグラフを示せ。
+$e^x$ のマクローリン展開は解析的に
+\begin{equation}
+e^x = \sum_{k=0}^{\infty} \frac{x^k}{k!}
+= 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots
+\end{equation}
+と与えられる。\texttt{taylor\_plot.py} の \texttt{plot} 関数を用いて数値的に係数を求め、真の関数と近似多項式を重ねてプロットする。
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> from taylor_plot import plot
+>>> import numpy as np
+
+>>> plot(lambda x: np.exp(x),
+...      x0=0.0, n=10, r=(-3, 3))
+\end{lstlisting}
+
+実行結果を図\ref{fig:task1-8}に示す。黒実線が真の関数 $f(x) = e^x$、破線が各奇数次数のテーラー近似多項式である。展開中心 $x_0 = 0$ の近傍では低次でも良好な近似を与えるが、$|x|$ が大きくなるにつれて高次項の寄与が不可欠となる。$n = 10$ 次の打ち切りにより、$x \in [-3, 3]$ の範囲全体にわたって真の関数にほぼ重なる精度が得られている。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Task_1.8_—_e^x_Maclaurin.pdf}
+    \caption{課題1.8 — $f(x) = e^x$ のマクローリン展開近似（$n = 10$）}
+    \label{fig:task1-8}
+\end{figure}
+
+\subsection*{課題 1.10}
+$f(x) = \log_e(1 + x),\;(x > -1)$ をマクローリン展開（$x_0 = 0$）し、近似次数の違いによるグラフを示せ。
+
+$\log(1 + x)$ のマクローリン展開は解析的に
+\begin{equation}
+\log(1 + x) = \sum_{k=1}^{\infty} (-1)^{k+1}\frac{x^k}{k}
+= x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \cdots, \quad |x| < 1
+\end{equation}
+と与えられ、収束半径は $|x| < 1$ である。課題1.8と同様に \texttt{plot} 関数を用いる。
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> from taylor_plot import plot
+>>> import math
+
+>>> plot(lambda x: math.log(1 + x),
+...      x0=0.0, n=10, r=(-0.9, 3))
+\end{lstlisting}
+
+実行結果を図\ref{fig:task1-10}に示す。$e^x$ の場合と対照的に、$\log(1 + x)$ のマクローリン展開は収束半径 $|x| < 1$ の制約により、$x \geq 1$ の領域では次数を上げても真の関数から逸脱することが確認できる。$x = -0.9$ 付近でも収束は遅く、交代級数の打ち切り誤差の影響が現れる。一方、$|x| < 1$ の範囲内では次数の増加とともに近似精度が向上している。
+
+この対比から、テーラー級数展開による近似の有効性は対象関数の解析性と収束半径に強く依存することが理解できる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{images/Task_1.10_—_log1+x_Maclaurin.pdf}
+    \caption{課題1.10 — $f(x) = \log(1 + x)$ のマクローリン展開近似（$n = 10$）}
+    \label{fig:task1-10}
+\end{figure}
 
 \section{考察}
-% 実験結果と精度の検証
+
+本章では、Newton差分商を用いた数値的テーラー級数展開アルゴリズムを実装し、$e^x$ および $\log(1+x)$ のマクローリン展開近似を行った。数値的に求めた係数は解析的な係数とよく一致した。
+
+両関数の近似精度の差は、級数の一般項の分母に起因する：
+\begin{align}
+e^x      &: \sum_{k=0}^{\infty} \frac{x^k}{k!}, \quad \frac{x^k}{k!} \xrightarrow{k\to\infty} 0 \quad (\text{すべての }x\text{ に対して}) \;\Rightarrow\; R = \infty \\[4pt]
+\log(1+x) &: \sum_{k=1}^{\infty} (-1)^{k+1}\frac{x^k}{k}, \quad \frac{x^k}{k} \to 0 \;\;(|x| < 1\text{ のときに限る}) \;\Rightarrow\; R = 1
+\end{align}
+$e^x$ では分母の階乗 $k!$ が $k$ の増加とともに極めて速く成長するため、$|x|$ がどんなに大きくても $\frac{|x|^k}{k!} \to 0$ となり、収束半径は $R = \infty$（全実数で収束）である。したがって次数 $n$ を増やすほど近似精度は単調に向上する。
+
+一方 $\log(1+x)$ では分母が $k$ に過ぎないため、$k$ の成長速度は $x^k$ に追いつけない。$|x| \geq 1$ では項が $0$ に収束せず級数は発散し、近似は破綻する。$|x| < 1$ の範囲内でも収束は遅く、高精度を得るには非常に多くの項を要する。
+
+本実装のNewton差分商法では、サンプル間隔 $h = 0.05$ に依存する $k$ 階差分商の打ち切り誤差が $O(h)$ であり、高次係数ほど数値誤差が蓄積する。より高精度が必要な場合は $h$ の縮小が有効である。
+
+%% ============================================================
+%% 10. 参考文献
+%% ============================================================
+\begin{thebibliography}{9}
+\bibitem{young1971}
+David M. Young,
+\emph{Iterative Solution of Large Linear Systems},
+Academic Press, New York, 1971.
+
+\bibitem{wikipedia_gs}
+Wikipedia contributors,
+``Gauss–Seidel method,'' \emph{Wikipedia, The Free Encyclopedia},
+\url{https://en.wikipedia.org/wiki/Gauss–Seidel_method}
+
+\bibitem{wikipedia_sor}
+Wikipedia contributors,
+``Successive over-relaxation,'' \emph{Wikipedia, The Free Encyclopedia},
+\url{https://en.wikipedia.org/wiki/Successive_over-relaxation}
+
+\bibitem{wikipedia_dd}
+Wikipedia contributors,
+``Divided differences,'' \emph{Wikipedia, The Free Encyclopedia},
+\url{https://en.wikipedia.org/wiki/Divided_differences}
+\end{thebibliography}
 
 \end{document}
