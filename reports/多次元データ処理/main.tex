@@ -124,30 +124,59 @@
 
 %% ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
-  \thispagestyle{titlepage}
-  \centering
-  \vspace*{2cm}
+\setlength{\parindent}{0pt}
+  
+\begin{center}
+{\huge \textbf{情報工学実験Ⅱレポート（山本担当分）表紙}}\\[0.8cm]
+\end{center}
 
-  {\large 情報工学実験II}\\[0.5em]
-  {\large 実験レポートレポート}\\[2em]
+\begin{large}
+番号： 4347 名前： Deka Risman Permana\vspace{0.3cm}
 
-  \HRule{}\\[1em]
-  {\LARGE \textbf{多次元データ処理}}\\[0.5em]
-  \HRule{}
+実施日時： 令和8年5月20日、5月27日 場所： HIパソコン室\vspace{0.3cm}
 
-  \vspace{3cm}
+提出〆切： 令和8年6月17日（水）8:50 WebClass\vspace{0.3cm}
 
-  \begin{tabular}{rl}
-    \textbf{氏　　名} & ：Deka Risman Permana \\[0.4em]
-    \textbf{学　　科} & ：人間情報システム工学科 4年 \\[0.4em]
-    \textbf{出席番号} & ：4347 \\[0.4em]
-    \textbf{担当教員} & ：先生 \\
-  \end{tabular}
+実験テーマ名：（第5、6回）多次元データ処理\vspace{0.3cm}
 
-  \vfill
+チェック欄： 次表の項目について自己チェックしてください
+\end{large}
 
-  \textbf{提出日：}\today
-
+\begin{center}
+\begin{tabularx}{\textwidth}{|X|>{\centering\arraybackslash}m{5cm}|}
+  \hline
+  \multicolumn{1}{|c|}{\multirow{2}{*}{\textbf{項目}}} & \textbf{自己チェック} \\
+  & \textbf{（出来たものに◯をつける）} \\
+  \hline
+  実験目的がある & ◯\\
+  \hline
+  （問題1）Ex.1-1について、スクリプト、実行結果、説明がついている & ◯\\
+  \hline
+  （問題1）Ex.2-1～2-4について、スクリプト、実行結果、説明がついている & ◯\\
+  \hline
+  （問題1）Ex.3-1～3-3について、スクリプト、実行結果、説明がついている & ◯\\
+  \hline
+  （問題1）Ex.4-1～4-3について、スクリプト、実行結果、説明がついている & ◯\\
+  \hline
+  （問題2(a)）について、各自のset.seedの乱数で生成された3階テンソルAを利用した & ◯\\
+  \hline
+  （問題2(a)）について、スクリプト、実行結果、説明がついている。unfold関数による結果の比較もした & ◯\\
+  \hline
+  （問題2(b)）について、スクリプト、実行結果、説明がついている。また、点灯状態についても明記した & ◯\\
+  \hline
+  （問題2(c)）について、各自のset.seedの乱数で生成された3階テンソルAを利用した & ◯\\
+  \hline
+  （問題2(c)）について、スクリプト、実行結果、説明がついている。fold関数による結果の比較もした & ◯\\
+  \hline
+  感想がある & ◯\\
+  \hline
+  参考文献がある & ◯\\
+  \hline
+  レポートの1枚目にこの表紙をつけている & ◯\\
+  \hline
+\end{tabularx}
+\end{center}
+  
 \end{titlepage}
 
 %% ── Table of Contents ────────────────────────────────────────
@@ -171,55 +200,430 @@
 WebClass にアップされた教材の学習を行い、演習課題およびアンケートの回答などを実施する。
 
 
-\subsection{演習I}\label{subsec:exercise1}
+\subsection{問題(1): Ex.1-1}\label{subsec:exercise1}
+\subsubsection{実装}
+
+演習Iでは、高階テンソルの概要を学び、Rで高階テンソルを扱うためのパッケージ
+\texttt{rTensor} をインストールした。
+
+\begin{lstlisting}[language=R]
+install.packages("rTensor")
+library(rTensor)
+\end{lstlisting}
+
+\subsubsection{結果}
+パッケージのインストールにより、エラーが表示されずに実行できた。
+
+\subsubsection{説明}
+パッケージのインストールにより、次の課題に利用される関数（$modeSum$、$fold$、$unfold$など）が実行可能になった。
+
+\subsection{問題(1): Ex.2-1~2.4}\label{subsec:exercise2}
+
+教材の例題に従い、$3 \times 3 \times 3$ の立方体における電球の配置を3階テン
+ソルで表現し、\texttt{modeSum} 関数を用いて3方向からの透視図を作成する。
+電球の位置は $\{1,5,9,11,15,16,21,22,26\}$ である。
+\newpage
+% ============================================================
+\subsubsection{3階テンソルの生成}
+
+\textbf{スクリプト}
+
+\begin{lstlisting}[language=R]
+library(rTensor)
+A <- array(0, dim = c(3,3,3))
+A[1,1,1] <- A[2,2,1] <- A[3,3,1] <- 1
+A[2,1,2] <- A[3,2,2] <- A[1,3,2] <- 1
+A[3,1,3] <- A[1,2,3] <- A[2,3,3] <- 1
+A <- as.tensor(A)
+\end{lstlisting}
+
+\textbf{説明}
+$3\times3\times3$ の立方体を表す配列を作り、電球がセットされた
+位置（1,5,9,11,15,16,21,22,26）に1を代入し、\texttt{as.tensor} で
+rTensor オブジェクトに変換する。
+
+% ============================================================
+\subsubsection{生成したテンソルの中身の確認}
+
+\textbf{結果}
+\begin{lstlisting}[language=R]
+> A
+Numeric Tensor of 3 Modes
+Modes:  3 3 3
+Data:
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    0    0    1
+[2,]    1    0    0
+[3,]    0    1    0
+
+, , 3
+
+     [,1] [,2] [,3]
+[1,]    0    1    0
+[2,]    0    0    1
+[3,]    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+\texttt{A} と入力すると3枚の $3\times3$ 行列として表示される。
+\texttt{A[,,k]} は $k$ 枚目（上から $k$ 層目）を表す。電球を
+セットした9箇所に1、それ以外に0が入っていることが確認できる。
+
+% ============================================================
+\subsubsection{透視図の作成 (modeSum)}
+
+\textbf{スクリプト}
+
+\begin{lstlisting}[language=R]
+A_1sum <- modeSum(A, 1, drop=TRUE)
+A_2sum <- modeSum(A, 2, drop=TRUE)
+A_3sum <- modeSum(A, 3, drop=TRUE)
+\end{lstlisting}
+
+\textbf{説明}
+
+\texttt{modeSum(tnsr, m, drop)} は、テンソル \texttt{tnsr} の $m$-モードに
+沿って部分テンソルの和をとる関数である。\texttt{drop=TRUE} を指定すると、
+和をとったモードが削除され、1階低いテンソル（ここでは行列）が得られる。
+
+\begin{itemize}
+  \item \texttt{modeSum(A, 1, drop=TRUE)}：上から下方向に見た透視図。
+    モード1（$i_1$）方向に和をとることで、$i_2$-$i_3$ 平面の $3 \times 3$ 行列が得られる。
+  \item \texttt{modeSum(A, 2, drop=TRUE)}：左から右方向に見た透視図。
+    モード2（$i_2$）方向に和をとることで、$i_1$-$i_3$ 平面の $3 \times 3$ 行列が得られる。
+  \item \texttt{modeSum(A, 3, drop=TRUE)}：前から後方向に見た透視図。
+    モード3（$i_3$）方向に和をとることで、$i_1$-$i_2$ 平面の $3 \times 3$ 行列が得られる。
+\end{itemize}
+
+% ============================================================
+\subsubsection{透視図の確認と点灯判定}
+
+\textbf{結果}
+
+\begin{lstlisting}[language=R]
+> A_1sum
+Numeric Tensor of 2 Modes
+Modes:  3 3
+Data:
+     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    1    1    1
+[3,]    1    1    1
+> A_2sum
+Numeric Tensor of 2 Modes
+Modes:  3 3
+Data:
+     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    1    1    1
+[3,]    1    1    1
+> A_3sum
+Numeric Tensor of 2 Modes
+Modes:  3 3
+Data:
+     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    1    1    1
+[3,]    1    1    1
+\end{lstlisting}
+
+\textbf{説明}
+
+3方向すべての透視図において、すべての要素が1となっている。これは、どの方向から
+見てもすべての位置で電球が点灯して見えることを意味する。例題の電球配置
+$\{1,5,9,11,15,16,21,22,26\}$ は、各方向から見て影になるマスが1つもない
+全点灯の配置であることが確認できた。
+
+\subsection{問題(1): Ex.3-1~3-3}\label{subsec:exercise3}
+
+Ex.2-1と同じ例題テンソルに対し、\texttt{unfold} 関数を用いて $n$-モード行列
+展開を行う。
+
+\subsubsection{1-モード行列展開}
+\begin{lstlisting}
+> A1 <- unfold(A, row_idx=1, col_idx=c(3,2))
+> A1
+Numeric Tensor of 2 Modes
+Modes:  3 9
+Data:
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+[1,]    1    0    0    0    0    1    0    1    0
+[2,]    0    1    0    1    0    0    0    0    1
+[3,]    0    0    1    0    1    0    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+
+\texttt{row\_idx=1} でモード1（$i_1$）を行方向に、
+\texttt{col\_idx=c(3,2)} でモード3→2の順に列方向へ展開。
+テンソルを左→右に輪切りにし、得られた $3\times3$ 行列を横に並べたものに相当する。
+
+\subsubsection{2-モード行列展開}
+\begin{lstlisting}
+> A2 <- unfold(A, row_idx=2, col_idx=c(1,3))
+> A2
+Numeric Tensor of 2 Modes
+Modes:  3 9
+Data:
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+[1,]    1    0    0    0    1    0    0    0    1
+[2,]    0    1    0    0    0    1    1    0    0
+[3,]    0    0    1    1    0    0    0    1    0
+\end{lstlisting}
+
+\newpage
+\textbf{説明}
+
+\texttt{row\_idx=2} でモード2（$i_2$）を行方向に、
+\texttt{col\_idx=c(1,3)} でモード1→3の順に列方向へ展開。
+テンソルを前→後に輪切りにし、各行列を転置して横に並べたものに相当する。
+
+\subsubsection{3-モード行列展開}
+\begin{lstlisting}
+> A3 <- unfold(A, row_idx=3, col_idx=c(2,1))
+> A3
+Numeric Tensor of 2 Modes
+Modes:  3 9
+Data:
+     [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9]
+[1,]    1    0    0    0    1    0    0    0    1
+[2,]    0    0    1    1    0    0    0    1    0
+[3,]    0    1    0    0    0    1    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+
+\texttt{row\_idx=3} でモード3（$i_3$）を行方向に、
+\texttt{col\_idx=c(2,1)} でモード2→1の順に列方向へ展開。
+テンソルを上→下に輪切りにし、各行列を転置して横に並べたものに相当する。
+
+\subsection{問題(1): Ex.4-1~4-3}\label{subsec:exercise4}
+
+行列展開されたマップを \texttt{fold} 関数を用いて元の3階テンソルに畳み込む。
+
+\subsubsection{1-モード行列展開}
+\begin{lstlisting}
+> A_org <- fold(A1, row_idx=1, col_idx=c(3,2), modes=c(3,3,3))
+> A_org
+Numeric Tensor of 3 Modes
+Modes:  3 3 3
+Data:
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    0    0    1
+[2,]    1    0    0
+[3,]    0    1    0
+
+, , 3
+
+     [,1] [,2] [,3]
+[1,]    0    1    0
+[2,]    0    0    1
+[3,]    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+
+\texttt{fold} に \texttt{unfold} と同じ \texttt{row\_idx, col\_idx} と
+元のサイズ \texttt{modes=c(3,3,3)} を与えることで、元のテンソルが復元される。
+
+\subsubsection{2-モード行列展開}
+\begin{lstlisting}
+> A_org <- fold(A2, row_idx=2, col_idx=c(1,3), modes=c(3,3,3))
+> A_org
+Numeric Tensor of 3 Modes
+Modes:  3 3 3
+Data:
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    0    0    1
+[2,]    1    0    0
+[3,]    0    1    0
+
+, , 3
+
+     [,1] [,2] [,3]
+[1,]    0    1    0
+[2,]    0    0    1
+[3,]    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+
+2-モード行列展開からも同様に、\texttt{unfold} と同じパラメータで
+\texttt{fold} すれば元のテンソルに戻る。
+
+
+\subsubsection{3-モード行列展開}
+\begin{lstlisting}
+> A_org <- fold(A3, row_idx=3, col_idx=c(2,1), modes=c(3,3,3))
+> A_org
+Numeric Tensor of 3 Modes
+Modes:  3 3 3
+Data:
+, , 1
+
+     [,1] [,2] [,3]
+[1,]    1    0    0
+[2,]    0    1    0
+[3,]    0    0    1
+
+, , 2
+
+     [,1] [,2] [,3]
+[1,]    0    0    1
+[2,]    1    0    0
+[3,]    0    1    0
+
+, , 3
+
+     [,1] [,2] [,3]
+[1,]    0    1    0
+[2,]    0    0    1
+[3,]    1    0    0
+\end{lstlisting}
+
+\textbf{説明}
+
+3-モードでも同様。\texttt{fold} は \texttt{unfold} の逆操作であり、
+\texttt{row\_idx, col\_idx, modes} を対応させれば元のテンソルを完全に復元できる。
+
+\newpage
+\subsection{問題2(a): $n$-モード行列展開の手動実装}\label{subsec:2-a}
 
 \subsubsection{実装}
 
+演習IIIのスライド5の定義に従って、3階テンソルの $n$-モード行列展開をRで手動
+実装する。出席番号 4347 に基づき \texttt{set.seed(5347)} でテンソルを生成し、
+手動実装と \texttt{unfold} 関数の結果を比較する。
+
+\lstinputlisting[language=R, caption=問題2(a)のRスクリプト, label=lst:p2a]
+{code/problem2a.R}
+
 \subsubsection{結果}
+
+\begin{lstlisting}
+1-mode match: TRUE 
+2-mode match: TRUE 
+3-mode match: TRUE
+\end{lstlisting}
+
+手動実装（定義に従う）と \texttt{unfold} 関数の結果は、すべてのモードで完全
+に一致した。
 
 \subsubsection{説明}
 
+手動実装では、定義に従って3重ループを用いて各要素を適切な行・列に配置した。
+\texttt{unfold} 関数は \texttt{col\_idx} で指定されたモードの順序に従って
+列を並べる。手動実装と \texttt{unfold} 関数の結果を一致させるには、定義と
+同じ列順序になるように \texttt{col\_idx} を指定する必要がある。
 
-\subsection{演習II}\label{subsec:exercise2}
+1-モードの場合、定義では列インデックスが $(i_3-1)I_2 + i_2$ であり、これは
+\texttt{col\_idx=c(2,3)}（モード2が最も速く変化）に対応する。演習IIIの例
+（\texttt{col\_idx=c(3,2)}）では列の並び順が異なるが、含まれる要素の集合は
+同一である。
+
+\newpage
+\subsection{問題2(b): $4 \times 4 \times 4$ 立方体の透視図}
+
+No. 47の電球配置は以下の16位置である：
+\begin{center}
+\{1, 6, 11, 16, 20, 23, 26, 29, 34, 40, 41, 47, 51, 53, 60, 62\}
+\end{center}
 
 \subsubsection{実装}
 
+大きさ $4 \times 4 \times 4$ の立方体において、表1のNo.\,47（出席番号 4347
+に対応）の電球配置に従い、16個の電球を配置した3階テンソルを生成し、3方向から
+の透視図を作成する。
+
+\lstinputlisting[language=R, caption=問題2(b)のRスクリプト, label=lst:p2b]
+{code/problem2b.R}
+
 \subsubsection{結果}
+\begin{lstlisting}     
+> B_1sum
+Numeric Tensor of 2 Modes
+Modes:  4 4 
+Data: 
+     [,1] [,2] [,3] [,4]
+[1,]    1    1    1    1
+[2,]    1    1    1    1
+[3,]    1    1    1    1
+[4,]    1    1    1    1
+> B_2sum
+Numeric Tensor of 2 Modes
+Modes:  4 4 
+Data: 
+     [,1] [,2] [,3] [,4]
+     [1,]    1    1    1    1
+[2,]    1    1    1    1
+[3,]    1    1    1    1
+[4,]    1    1    1    1
+> B_3sum
+Numeric Tensor of 2 Modes
+Modes:  4 4 
+Data: 
+[,1] [,2] [,3] [,4]
+[1,]    1    1    1    1
+[2,]    1    1    1    1
+[3,]    1    1    1    1
+[4,]    1    1    1    1
+上→下 (1-mode) 全点灯: TRUE 
+左→右 (2-mode) 全点灯: TRUE 
+前→後 (3-mode) 全点灯: TRUE 
+全方向全点灯: TRUE
+\end{lstlisting}
+
+3方向すべてから見て、すべての位置が点灯して見える。
 
 \subsubsection{説明}
 
-
-\subsection{演習III}\label{subsec:exercise3}
-
-\subsubsection{実装}
-
-\subsubsection{結果}
-
-\subsubsection{説明}
-
-
-\subsection{演習IV}\label{subsec:exercise4}
-
-\subsubsection{実装}
-
-\subsubsection{結果}
-
-\subsubsection{説明}
-
-
-\subsection{応用課題}\label{subsec:application}
-
-\subsubsection{実装}
-
-\subsubsection{結果}
-
-\subsubsection{説明}
-
+$4\times4\times4$ 立方体では要素番号 $= (i_3-1)\times16 + (i_2-1)\times4 + i_1$
+である。No.47の配置は各層に4個ずつ、すべて異なる $(i_1,i_2)$ に電球があるため、
+1-mode sum では各 $(i_2,i_3)$ に、2-mode sum では各 $(i_1,i_3)$ に、
+3-mode sum では各 $(i_1,i_2)$ に必ず1個以上の電球が存在し、全方向全点灯となる。
 
 \section{感想}\label{sec:reflection}
 
+本実験を通して、高階テンソル（多次元配列）の基本概念とRを用いた操作方法につい
+て理解を深めることができた。特に、3階テンソルを立方体に対応させ、電球の点灯の
+ような具体的な例を通して学ぶことで、抽象的なテンソル操作を直感的に理解すること
+ができた。
+
 \addcontentsline{toc}{section}{参考文献}
 \begin{thebibliography}{9}
+
+\bibitem{rTensor}
+J.~Li, J.~Bien, and M.~Wells：
+Package `rTensor',
+\url{https://cran.r-project.org/web/packages/rTensor/rTensor.pdf}, 2026.
+
 \end{thebibliography}
 
 \end{document}

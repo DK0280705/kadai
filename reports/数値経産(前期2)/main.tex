@@ -1,0 +1,351 @@
+%% ============================================================
+%% School Report Template (Japanese / LuaLaTeX)
+%% Compile with: lualatex main.tex  or  latexmk main.tex
+%%
+%% \documentclass[options]{class} is always the first command.
+%% '12pt' sets the base font size; 'a4paper' sets the paper size.
+%% 'ltjsreport' is the LuaLaTeX Japanese report document class (supports chapters).
+%% ============================================================
+
+%% ============================================================
+%% 1. DOCUMENT CLASS
+%% ============================================================
+\documentclass[12pt,a4paper]{ltjsreport}
+
+%% ============================================================
+%% 2. PACKAGE IMPORTS
+%% ============================================================
+%% ------------------------------------------------------------
+%% Package Imports
+%% \usepackage[options]{name} loads a package from the preamble.
+%% Packages extend LaTeX — fonts, colors, math, figures, tables…
+%% ------------------------------------------------------------
+%% Latin Modern: freely scalable version of Computer Modern.
+%% Prevents "Font ... not available, size <X> substituted" warnings
+%% that pgfplots can trigger when computing tiny axis-label sizes.
+\usepackage{lmodern}
+%% Japanese font setup — change the option to match your system.
+%%   Options: [noto-otf], [ipaex], [hiragino-pron], [kozuka-pr6n]
+%%   No option → use the system default font
+\usepackage{luatexja-preset}
+
+%% Page layout — 'geometry' sets margins directly (top/bottom/left/right)
+\usepackage[top=30mm, bottom=25mm, left=25mm, right=25mm]{geometry}
+
+%% Section heading spacing — reduce vertical space before/after \section and \subsection.
+%% Use the starred (*) versions to suppress paragraph indentation after the heading.
+\usepackage{titlesec}
+\titlespacing{\section}{0pt}{3.5ex plus 1ex minus 0.5ex}{2.3ex plus 0.5ex}
+\titlespacing{\subsection}{0pt}{3.25ex plus 1ex minus 0.5ex}{1.5ex plus 0.5ex}
+
+%% Color — 'svgnames' unlocks named colors like SteelBlue, Coral; 'table' colors table rows
+\usepackage[svgnames,table]{xcolor}
+
+%% Image inclusion — provides \includegraphics[width=...]{file}
+\usepackage{graphicx}
+
+%% TikZ / pgfplots — draw vector diagrams and data charts inline in LaTeX
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%% Source code — use \lstinputlisting{file} or lstlisting environment for highlighted code
+\usepackage{listings}
+\renewcommand{\lstlistingname}{ソースコード}
+
+%% Hyperlinks — makes ToC entries, \ref, \cite, and \url clickable in the PDF
+\usepackage{hyperref}
+
+%% Header and footer customization (configured in the Page Style section below)
+\usepackage{fancyhdr}
+
+%% Captions and sub-figures — sub-figures are labeled (a), (b), … automatically
+\usepackage[format=hang, font=small, labelfont=bf, compatibility=false]{caption}
+\usepackage{subcaption}
+
+%% Mathematics — amsmath adds equation/align environments; amssymb adds ∀, ∈, ℝ, etc.
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% Professional table rules — \toprule, \midrule, \bottomrule instead of \hline
+\usepackage{booktabs}
+
+%% Circuitry diagrams — draw electrical circuits with \begin{circuitikz} ... \end{circuitikz}
+\usepackage{circuitikz}
+
+%% Algorithms — pseudocode in a mathematical style
+\usepackage[plain,ruled,noend]{algorithm2e}
+\SetKwInOut{KwIn}{入力}
+\SetKwInOut{KwOut}{出力}
+\SetKwComment{Comment}{// }{}
+\SetKwFor{ForAll}{for all}{do}{end for}
+\SetKwIF{If}{ElseIf}{Else}{if}{then}{else if}{else}{end if}
+%% Reduce algorithm top/bottom margins
+\SetAlgoSkip{medskip}
+\SetAlgorithmName{アルゴリズム}{アルゴリズム}{アルゴリズム一覧}
+
+
+%% URL
+\usepackage{url}
+
+%% Force figure placement with [H]
+\usepackage{float}
+
+%% List customization — control bullet/numbered list labels, spacing, and indentation
+\usepackage{enumitem}
+\setlist[enumerate]{topsep=2pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+\setlist[itemize]{topsep=2pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+
+%% ============================================================
+%% 3. LISTINGS (SOURCE CODE) CONFIGURATION
+%% ============================================================
+%% ------------------------------------------------------------
+%% Source Code Block Appearance
+%% \definecolor{name}{model}{value} creates a named color.
+%% \lstset{} applies settings globally to every code listing.
+%% ------------------------------------------------------------
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{cmcolor}{RGB}{100,100,100}
+\definecolor{stcolor}{RGB}{160,0,0}
+
+\lstset{
+  backgroundcolor  = \color{codebg},
+  basicstyle       = \ttfamily\small,
+  keywordstyle     = \color{kwcolor}\bfseries,
+  commentstyle     = \color{cmcolor}\itshape,
+  stringstyle      = \color{stcolor},
+  numbers          = left,
+  numberstyle      = \tiny\color{gray},
+  numbersep        = 8pt,
+  frame            = single,
+  rulecolor        = \color{codeframe},
+  breaklines       = true,
+  breakatwhitespace= false,
+  showstringspaces = false,
+  tabsize          = 4,
+  captionpos       = t,
+  xleftmargin      = 2em,
+  framexleftmargin = 1.5em,
+}
+
+%% ============================================================
+%% 4. PAGE STYLE (HEADERS & FOOTERS)
+%% ============================================================
+%% ------------------------------------------------------------
+%% Page Style (Headers & Footers)
+%% \pagestyle{fancy} activates fancyhdr for the whole document.
+%% \lhead/\chead/\rhead = left/center/right header slots.
+%% \lfoot/\cfoot/\rfoot = left/center/right footer slots.
+%% \fancypagestyle{name}{...} defines a named style applied
+%% per-page with \thispagestyle{name}.
+%% ------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small 数値計算 (前期) 2}
+\lhead{\small \nouppercase{\leftmark}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% Title page — clear all header/footer slots and suppress the horizontal rule
+\fancypagestyle{titlepage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% Table of contents pages — show only a page number, no header rule
+\fancypagestyle{frontmatter}{
+  \fancyhf{}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% Chapter pages — redefine 'plain' to match 'fancy' for consistency
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \rhead{\small 数値計算 (前期) 1}
+  \lhead{\small \nouppercase{\leftmark}}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+%% ============================================================
+%% 5. HYPERLINK CONFIGURATION
+%% ============================================================
+%% ------------------------------------------------------------
+%% Hyperlink Configuration
+%% \hypersetup{} controls link colors and PDF metadata
+%% (title, author, subject appear in PDF reader properties).
+%% ------------------------------------------------------------
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = NavyBlue,
+  citecolor  = NavyBlue,
+  urlcolor   = NavyBlue,
+  pdftitle   = {数値計算 (前期) 2},
+  pdfauthor  = {Deka Risman Permana},
+  pdfsubject = {Pythonを用いた気温データの統計解析},
+  plainpages = false,  % Suppress duplicate page identifier warnings
+  pdfpagelabels = true,  % Use PDF page labels for different numbering schemes
+}
+
+%% ============================================================
+%% 6. CUSTOM COMMANDS
+%% ============================================================
+%% ------------------------------------------------------------
+%% Custom Commands
+%% \newcommand{\name}[args]{definition} creates a reusable macro.
+%% \rule{width}{thickness} draws a solid horizontal line.
+%% ------------------------------------------------------------
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%% ============================================================
+%% 7. CHAPTER CUSTOMIZATION & SECTION NUMBERING
+%% ============================================================
+%% ------------------------------------------------------------
+%% Chapter Customization
+%% - Use fancy page style (show headers on chapter pages)
+%% - Reduce vertical spacing before/after chapter titles
+%% ------------------------------------------------------------
+\renewcommand{\prechaptername}{計算}
+\renewcommand{\postchaptername}{}
+
+%% ── Section Numbering ────────────────────────────────────────
+\renewcommand{\thesection}{\arabic{section}.}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+
+\makeatletter
+\renewcommand{\chapter}{%
+  \if@openright\cleardoublepage\else\clearpage\fi%
+  \thispagestyle{fancy}%
+  \global\@topnum\z@%
+  \@afterindentfalse%
+  \secdef\@chapter\@schapter}
+\def\@makechapterhead#1{%
+  \vspace*{5pt}%  % Space before chapter (reduced from default 50pt)
+  {\parindent\z@\raggedright\normalfont%
+    \ifnum\c@secnumdepth>\m@ne%
+      \LARGE\bfseries\@chapapp\thechapter\@chappos%
+      \par\nobreak%
+      \vskip 10\p@  % Space between chapter number and title
+    \fi%
+    \interlinepenalty\@M%
+    \LARGE\bfseries #1\par\nobreak%
+    \vskip 20\p@  % Space after chapter title (default: 40pt)
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{5pt}%  % Space before unnumbered chapter
+  {\parindent\z@\raggedright%
+    \normalfont%
+    \interlinepenalty\@M%
+    \LARGE\bfseries #1\par\nobreak%
+    \vskip 20\p@  % Space after unnumbered chapter
+  }}
+\makeatother
+
+%% ============================================================
+%% 8. DOCUMENT METADATA
+%% ============================================================
+%% Document Metadata
+%% These are intentionally empty — the title page is built
+%% manually inside the titlepage environment below,
+%% rather than using \maketitle.
+%% ============================================================
+\title{} % title page is built manually in the titlepage environment below
+\date{}
+\author{}
+
+%% ============================================================
+%% 9. DOCUMENT BODY
+%% ============================================================
+\begin{document}
+
+%% ============================================================
+%% 9a. TITLE PAGE
+%% ============================================================
+\begin{titlepage}
+  \thispagestyle{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\large 数値計算}\\[0.5em]
+  {\large 前期中間レポート}\\[2em]
+
+  \HRule{}\\[1.5em]
+  {\Huge \textbf{数値計算 (前期) 2}}\\[0.5em]
+  \HRule{}
+
+  \vspace{3cm}
+
+  \begin{tabular}{rl}
+    \textbf{氏　　名} & ：Deka Risman Permana\\[0.4em]
+    \textbf{学　　科} & ：人間情報システム工学科 4年\\[0.4em]
+    \textbf{出席番号} & ：4347\\[0.4em]
+    \textbf{担当教員} & ：小松一男\\
+  \end{tabular}
+
+  \vfill
+
+\end{titlepage}
+
+%% ============================================================
+%% 9b. TABLE OF CONTENTS
+%% ============================================================
+\newpage
+\thispagestyle{frontmatter}
+\pagenumbering{roman}
+\tableofcontents(
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%% ============================================================
+%% 9c. MAIN CONTENT (CHAPTERS)
+%% ============================================================
+
+\chapter{非線形方程式（代数方程式）の解法}\label{chap:non-linear-equations}
+\section{目標}
+次の２つの数値解法による非線形方程式の逐次解法アルゴリズムが理解でき、
+プログラミングによる問題解法ができる
+\begin{itemize}
+  \item ニュートン法による非線形方程式の解法(Newton method for non-linear equations)
+  \item 2分法による非線形方程式の解法(Bisection method for non-linear equations)
+\end{itemize}
+\section{理論}
+\subsection{ニュートン法による非線形方程式の解法}
+非線形方程式
+\begin{equation}
+f(x) = 0
+\end{equation}
+の解を初期値$x_0$を適当に与えて順次$x_1,x_2,\ldots,x_n$を計算して
+近似解を求める方法で、テーラー展開の１次近似式をもとにした方法がニュートン法（図3.2参）である。
+いま$f(x)$を点$x_{k-1}$でテーラー展開すると
+\begin{equation}
+f(x)=f(x_{k-1})+f'(x_{k-1})(x - x_{k-1})+ \frac{f^{(2)}(x_{k-1})}{2!})(x-x_{k-1})^2+\cdots
+\end{equation}
+となり、２次以降の項を無視すると
+\begin{equation}\label{eq:taylor-approx}
+f(x)\approx f(x_{k-1})+f'(x_{k-1})(x-x_{k-1})
+\end{equation}
+$f(x)=0$の解を直接求める代わりに近似的に(\ref{eq:taylor-approx})式=0の解を$x_k$として求めると、
+\begin{equation}
+x_k = x_{k-1} - \frac{f(x_{k-1})}{f'(x_{k-1})}
+\end{equation}
+である。これを反復使用するのがニュートン法である。
+\subsection{2分法による非線形方程式の解法}
+
+\begin{algorithm}
+\caption{ニュートン法のアルゴリズム}
+$k \leftarrow 0$\;
+\Repeat{$\left| \frac{x_k - x_{k-1}}{x_k} \right| < \varepsilon$}{
+$k \leftarrow k + 1$\;
+$x_k \leftarrow x_{k-1} - \frac{f(x_{k-1})}{f'(x_{k-1})}$\;
+}
+\end{algorithm}
+
+\chapter{定積分の解法}\label{chap:definite-integrals}
+
+\end{document}
