@@ -6,7 +6,9 @@ entity de2_top is
 		SW   : in  std_logic_vector(16 downto 0);
 		LEDR : out std_logic_vector(16 downto 0);
 		HEX0 : out std_logic_vector(6 downto 0);
-		HEX1 : out std_logic_vector(6 downto 0)
+		HEX1 : out std_logic_vector(6 downto 0);
+		HEX2 : out std_logic_vector(6 downto 0);
+		HEX3 : out std_logic_vector(6 downto 0)
 	);
 end entity de2_top;
 
@@ -20,8 +22,9 @@ architecture Structural of de2_top is
 	end component;
 	component hex2seg7 is
 		port (
-			hex: in  std_logic_vector(3 downto 0);
-			seg: out std_logic_vector(6 downto 0)
+			hex  :  in  std_logic_vector(3 downto 0);
+			seg  :  out std_logic_vector(6 downto 0);
+			seg_2:  out std_logic_vector(6 downto 0)
 		);
 	end component;
 	component compare2bits is
@@ -39,6 +42,16 @@ architecture Structural of de2_top is
 			output : out std_logic_vector(3 downto 0)
 		);
 	end component;
+	component adder4bits is
+		port(
+			a  : in  std_logic_vector(3 downto 0);
+			b  : in  std_logic_vector(3 downto 0);
+			c  : out std_logic_vector(4 downto 0)
+		);
+	end component;
+	
+   signal adder4_out  : std_logic_vector(4 downto 0);
+	
 begin
 	myadder2bits: adder2bits
 		port map(
@@ -68,5 +81,22 @@ begin
 		port map(
 			input  => SW(15 downto 12),
 			output => LEDR(15 downto 12)
+		);
+
+	myadder4bits: adder4bits
+		port map(
+			a => SW(3 downto 0),
+			b => SW(7 downto 4),
+			c => adder4_out
+		);
+	displayadder4_1: hex2seg7
+		port map(
+			hex => adder4_out(3 downto 0),
+			seg => HEX2
+		);
+	displayadder4_2: hex2seg7
+		port map(
+			hex => "000" & adder4_out(4),
+			seg => HEX3
 		);
 end architecture Structural;
