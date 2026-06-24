@@ -11,18 +11,6 @@ entity de2_top is
 end entity de2_top;
 
 architecture Structural of de2_top is
-	component test is 
-		port(	
-			sw_in   : in  std_logic;
-			led_out : out std_logic
-		);
-	end component;
-	component andtest is
-		port(
-			sw_in1, sw_in2     : in  std_logic_vector(1 downto 0);
-			led_out1, led_out2 : out std_logic
-		);
-	end component;
 	component adder2bits is
 		port (
 			a : in  std_logic_vector(1 downto 0);
@@ -36,17 +24,49 @@ architecture Structural of de2_top is
 			seg: out std_logic_vector(6 downto 0)
 		);
 	end component;
-begin
-	mytest: test
-		port map (
-			sw_in   => SW(0),
-			led_out => LEDR(0)
+	component compare2bits is
+		port (
+			A : in  std_logic_vector(1 downto 0);
+			B : in  std_logic_vector(1 downto 0);
+			W : out std_logic;
+			X : out std_logic;
+			Y : out std_logic
 		);
-	myandtest: andtest
-		port map (
-			sw_in1   => SW(2 downto 1),
-			sw_in2   => SW(4 downto 3),
-			led_out1 => LEDR(1),
-			led_out2 => LEDR(2)
+	end component;
+	component twocomplement is
+		port(
+			input  : in  std_logic_vector(3 downto 0);
+			output : out std_logic_vector(3 downto 0)
+		);
+	end component;
+begin
+	myadder2bits: adder2bits
+		port map(
+			a => SW(1 downto 0),
+			b => SW(3 downto 2),
+			c => LEDR(2 downto 0)
+		);
+	hex2seg7_1: hex2seg7
+		port map(
+			hex => SW(3 downto 0),
+			seg => HEX0
+		);
+	hex2seg7_2: hex2seg7
+		port map(
+			hex => SW(7 downto 4),
+			seg => HEX1
+		);
+	mycompare2bits: compare2bits
+		port map(
+			A => SW(9 downto 8),
+			B => SW(11 downto 10),
+			W => LEDR(10),
+			X => LEDR(9),
+			Y => LEDR(8)
+		);
+	mytwocomplement: twocomplement
+		port map(
+			input  => SW(15 downto 12),
+			output => LEDR(15 downto 12)
 		);
 end architecture Structural;
