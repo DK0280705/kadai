@@ -316,10 +316,7 @@
 \end{itemize}
 \section{理論}
 \subsection{ニュートン法による非線形方程式の解法}
-非線形方程式
-\begin{equation}
-f(x) = 0
-\end{equation}
+非線形方程式$f(x) = 0$
 の解を初期値$x_0$を適当に与えて順次$x_1,x_2,\ldots,x_n$を計算して
 近似解を求める方法で、テーラー展開の１次近似式をもとにした方法がニュートン法（図3.2参）である。
 いま$f(x)$を点$x_{k-1}$でテーラー展開すると
@@ -335,9 +332,8 @@ $f(x)=0$の解を直接求める代わりに近似的に(\ref{eq:taylor-approx})
 x_k = x_{k-1} - \frac{f(x_{k-1})}{f'(x_{k-1})}
 \end{equation}
 である。これを反復使用するのがニュートン法である。
-\subsection{2分法による非線形方程式の解法}
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{ニュートン法のアルゴリズム}
 $k \leftarrow 0$\;
 \Repeat{$\left| \frac{x_k - x_{k-1}}{x_k} \right| < \varepsilon$}{
@@ -346,6 +342,61 @@ $x_k \leftarrow x_{k-1} - \frac{f(x_{k-1})}{f'(x_{k-1})}$\;
 }
 \end{algorithm}
 
+\subsection{2分法による非線形方程式の解法}
+非線形方程式$f(x)=0$の解が存在すると思われる区間で$f(x)$の符号を調べながら次第に区間の幅を半分ずつ狭めて、
+方程式の解を求める方法である。
+
+\begin{algorithm}[H]
+\caption{２分法のアルゴリズム}
+$k \leftarrow 0$\;
+\Repeat{$\varepsilon > h$}{
+$k \leftarrow k + 1$\;
+$h \leftarrow \frac{h}{2}$\;
+\If{$f(x_k)f(x_k + h) < 0$} {
+  $x_{k+1} \leftarrow x_k$\;
+}
+\Else{
+  $x_{k+1} \leftarrow x_k + h$\;
+}
+}
+\end{algorithm}
+
 \chapter{定積分の解法}\label{chap:definite-integrals}
+\section{目標}
+次の４つの数値積分のアルゴリズムを理解し、プログラムを書いて問題解決ができる。
+\begin{itemize}
+  \item 区分求籍法(Definite Integrals using Rectangles)
+  \item 台形公式(Trapezoidal Rule)
+  \item シンプソンの公式(Simpson's Rule)
+  \item ２重積分(Double Integrals)
+\end{itemize}
+\section{理論}
+\subsection{区分求積法による解法}
+$f(x)$を塀区分$[a, b]$で定義された有界関数とし、その定積分：
+\begin{equation}\label{eq:def-integral}
+S = \int_{a}^{b}f(x)dx
+\end{equation}
+を考える。積分区間$[a,b]$を$n$等分し、各区間を
+\begin{equation}
+x_k = a + k \dot{h}\text{、ただし、 } h = \frac{b-a}{n}
+\end{equation}
+とする（ｈは刻み幅）。この区間ごとの面積の総和：
+\begin{equation}\label{eq:def-int-parts}
+S_n = \sum_{k=0}^{n-1}f(x_k)h
+\end{equation}
+で近似値を求める方法がく感求積法である。
+$n$を十分大きくとると、(\ref{eq:def-int-parts})式$S_n$の近似値が(\ref{eq:def-integral})式の$S$の新地に近づく。
+ただし、実際に計算機で行う際には$n$がある程度以上になると丸め誤差が累積するため精度には限界がある。
+
+\subsection{台形公式による解法}
+台形公式は、区間$[a,b]$を$n$等分し各小区間ごとの台形の面積の総和で定積分の近似値を求める方法で、
+\begin{equation}
+S_n = \sum_{k=0}^{n-1}\frac{h}{2}(f(x_k)+f(x_{k+1}))\text{、ただし、 } x_k = a + kh = a + k\frac{b-a}{n}
+\end{equation}
+となる。
+
+\subsection{シンプソンの公式による解法}
+
+\subsection{２重積分}
 
 \end{document}
