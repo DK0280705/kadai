@@ -14,12 +14,12 @@ signal TQ : std_logic_vector(3 downto 0);
 begin
 	process (RESET, CLK) begin
 		if (RESET = '0') then
-			TQ <= "0000"
-		elsif (CLK'event and CLK="1") then
+			TQ <= "0000";
+		elsif (CLK'event and CLK='1') then
 			if (TQ = "1001") then
-				TQ <= "0000"
+				TQ <= "0000";
 			else
-				TQ <= TQ + '1'
+				TQ <= TQ + '1';
 			end if;
 		end if;
 	end process;

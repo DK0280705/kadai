@@ -16,7 +16,7 @@ begin
 		if (RESET='0') then
 			IS_STATE <= STATE0;
 		elsif (CLK'event and CLK='1') then
-			iS_STATE <= NE_STATE;
+			IS_STATE <= NE_STATE;
 		end if;
 	end process;
 	

@@ -11,7 +11,7 @@ end kadai3;
 architecture rtl of kadai3 is
 begin
 	process(CLK) begin
-		if (CLK'event and CLK = '1') then
+		if (CLK'event and CLK='1') then
 			Q  <= D;
 			NQ <= not D;
 		end if;
