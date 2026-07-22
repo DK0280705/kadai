@@ -1,0 +1,543 @@
+% !TEX root = main.tex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+%% Fonts
+\usepackage{lmodern}
+\usepackage{luatexja-preset}
+
+%% Layout
+\usepackage[top=30mm, bottom=25mm, left=25mm, right=25mm]{geometry}
+
+%% Color / graphics
+\usepackage[svgnames,table]{xcolor}
+\usepackage{graphicx}
+
+%% Diagrams / charts
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{circuitikz}
+
+%% Source code listings
+\usepackage{listings}
+
+%% Hyperlinks (load near last)
+\usepackage{hyperref}
+
+%% Header / footer
+\usepackage{fancyhdr}
+
+%% Captions
+\usepackage[format=hang, font=small, labelfont=bf]{caption}
+\usepackage{subcaption}
+
+%% Mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% Professional table rules
+\usepackage{booktabs}
+
+%% URL
+\usepackage{url}
+
+%% List customization
+\usepackage{enumitem}
+
+%% Force exact float placement
+\usepackage{float}
+
+%% ── Source Code Appearance ───────────────────────────────────
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{kwcolor}{RGB}{0,0,180}
+\definecolor{cmcolor}{RGB}{100,100,100}
+\definecolor{stcolor}{RGB}{160,0,0}
+
+\lstset{
+  backgroundcolor  = \color{codebg},
+  basicstyle       = \ttfamily\small,
+  keywordstyle     = \color{kwcolor}\bfseries,
+  commentstyle     = \color{cmcolor}\itshape,
+  stringstyle      = \color{stcolor},
+  numbers          = left,
+  numberstyle      = \tiny\color{gray},
+  numbersep        = 8pt,
+  frame            = single,
+  rulecolor        = \color{codeframe},
+  breaklines       = true,
+  breakatwhitespace= false,
+  showstringspaces = false,
+  tabsize          = 4,
+  captionpos       = b,
+  xleftmargin      = 2em,
+  framexleftmargin = 1.5em,
+}
+
+%% ── Page Style ───────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small プログラミング実験}
+\lhead{\small \nouppercase{\leftmark}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\fancypagestyle{titlepage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\fancypagestyle{frontmatter}{
+  \fancyhf{}
+  \cfoot{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%% ── Hyperlink / PDF metadata ─────────────────────────────────
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = NavyBlue,
+  citecolor  = NavyBlue,
+  urlcolor   = NavyBlue,
+  pdftitle   = {組み込みシステム},
+  pdfauthor  = {Deka Risman Permana},
+  pdfsubject = {プログラミング実験},
+  pdfkeywords= {人間情報システム工学科 4年},
+}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%% ── 課題２／課題３共通：タクトスイッチ入力＋LED3個出力回路 ──────
+% TODO: 実際に配線した回路（プルアップ方式、ピン番号、抵抗値など）に合わせて自由に修正すること
+\newcommand{\arduinoLedSwitchCircuit}{%
+\begin{circuitikz}[american voltages, scale=0.85, every node/.style={transform shape}]
+  \draw (2,6.8) -- (6,6.8);
+  \node[above] at (5.6,6.8) {\small D2};
+  \draw (2,6.8) to[push button, l=SW] (0,6.8);
+  \draw (0,6.8) -- (0,1);
+
+  \node[above] at (5.6,6) {\small D8};
+  \draw (6,6) to[R, l=$R_1$] (4,6) to[leD, l=LED1] (2,6);
+  \draw (2,6) -- (2,1);
+
+  \node[above] at (5.6,4.2) {\small D9};
+  \draw (6,4.2) to[R, l=$R_2$] (4,4.2) to[leD, l=LED2] (2,4.2);
+
+  \node[above] at (5.6,2.4) {\small D10};
+  \draw (6,2.4) to[R, l=$R_3$] (4,2.4) to[leD, l=LED3] (2,2.4);
+
+  \draw (0,1) -- (6,1);
+  \draw (4,1) to[short] (4,0.6) node[ground]{};
+  \node[below] at (4,0) {GND};
+
+  \draw (6,0.8) rectangle (9,7.0);
+  \node at (7.5,4.2) {\textbf{Arduino}};
+  \node at (7.5,3.8) {\textbf{UNO}};
+\end{circuitikz}%
+}
+
+%% ── 課題４：ハードウェアデバウンス回路（プルアップ＋RC積分） ──────
+% TODO: 実際に構成した回路（抵抗値、コンデンサ、シュミットトリガICの有無など）に合わせて修正すること
+\newcommand{\hwDebounceCircuitBasic}{%
+\begin{circuitikz}[american voltages, scale=0.85, every node/.style={transform shape}]
+  % ── 5V電源 ──
+  \draw[-latex] (0,6.2) -- (0,6.8) node[above] {5.0V};
+  \draw (0,6.2) to[R, l=$10\mathrm{k}\Omega$] (0,4.6);
+
+  % ── ノードA：左にスイッチでGNDへ、右に直列抵抗 ──
+  \draw (0,4.6) to[push button, l=SW] (0,2.4) node[ground]{};
+  \draw (0,4.6) to[R, l=$10\mathrm{k}\Omega$] (3.4,4.6);
+
+  % ── ノードB：コンデンサでGNDへ、右にArduinoのD2へ ──
+  \draw (3.4,4.6) to[C, l=$0.1\,\mu\mathrm{F}$] (3.4,2.4) node[ground]{};
+  \draw (3.4,4.6) -- (5.2,4.6);
+  \node[above] at (4.5,4.6) {\small D2};
+
+  % ── Arduino本体（右側に配置） ──
+  \draw (5.2,3.6) rectangle (8.2,5.6);
+  \node at (6.7,5.1) {\textbf{Arduino}};
+\end{circuitikz}%
+}
+
+\newcommand{\hwDebounceCircuitSchmitt}{%
+\begin{circuitikz}[american voltages, scale=0.85, every node/.style={transform shape}]
+  % ── 5V電源 ──
+  \draw[-latex] (0,6.2) -- (0,6.8) node[above] {5.0V};
+  \draw (0,6.2) to[R, l=$10\mathrm{k}\Omega$] (0,4.6);
+
+  % ── ノードA：左にスイッチでGNDへ、右に直列抵抗 ──
+  \draw (0,4.6) to[push button, l=SW] (0,2.4) node[ground]{};
+  \draw (0,4.6) to[R, l=$10\mathrm{k}\Omega$] (3.4,4.6);
+
+  % ── ノードB：コンデンサでGNDへ、右にシュミットトリガ（invschmitt）を経てArduinoのD2へ ──
+  \draw (3.4,4.6) to[C, l=$0.1\,\mu\mathrm{F}$] (3.4,2.4) node[ground]{};
+  \draw (3.4,4.6) -- (4.4,4.6);
+  \node[invschmitt, transform shape] (buf) at (5.0,4.6) {};
+  \draw (4.4,4.6) -- (buf.west);
+  \draw (buf.east) -- (6.6,4.6);
+  \node[above] at (6.3,4.6) {\small D2};
+
+  % ── Arduino本体（右側に配置） ──
+  \draw (6.6,3.6) rectangle (9.6,5.6);
+  \node at (8.1,5.1) {\textbf{Arduino}};
+\end{circuitikz}%
+}
+
+\title{}
+\date{}
+\author{}
+
+%% ============================================================
+\begin{document}
+%% ============================================================
+
+%% ── Title Page ───────────────────────────────────────────────
+\begin{titlepage}
+  \thispagestyle{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\large 組み込みシステム}\\[0.5em]
+  {\large レポート}\\[2em]
+
+  \HRule{}\\[1em]
+  {\LARGE \textbf{組み込みシステム前期レポート}}\\[0.5em]
+  \HRule{}
+
+  \vspace{3cm}
+
+  \begin{tabular}{rl}
+    \textbf{氏　　名} & ：Deka Risman Permana \\[0.4em]
+    \textbf{学　　科} & ：人間情報システム工学科 4年 \\[0.4em]
+    \textbf{出席番号} & ：4347 \\[0.4em]
+    \textbf{担当教員} & ：先生 \\
+  \end{tabular}
+
+  \vfill
+
+  \textbf{提出日：}\today
+
+\end{titlepage}
+
+%% ── Table of Contents ────────────────────────────────────────
+\newpage
+\thispagestyle{frontmatter}
+\pagenumbering{roman}
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%% ── Sections ─────────────────────────────────────────────────
+
+\section{実験環境}\label{sec:env}
+
+% TODO: 実際に使用した機材・型番・バージョンに修正すること
+本実験で使用した機材およびソフトウェア環境を以下に示す。
+\begin{itemize}
+  \item マイコンボード：Arduino UNO R4 Minima
+  \item 開発環境：Arduino IDE
+  \item 入力部品：タクトスイッチ ×1
+  \item 出力部品：LED ×3（色は任意）
+  \item 受動部品：電流制限抵抗（値は\ref{sec:task2-circuit}節で算出）、
+        チャタリング抑制用抵抗・コンデンサ（課題４、\ref{sec:task4-circuit}節で使用）
+  \item その他：ブレッドボード、ジャンパワイヤ、USBケーブル、PC
+\end{itemize}
+
+%% ============================================================
+\section{課題１：チャタリング現象}\label{sec:task1}
+%% ============================================================
+
+\subsection{チャタリング現象（バウンシング現象）とは}\label{sec:task1-explanation}
+
+% TODO: 参考文献（\ref{sec:references}節）の内容と合わせて、自分の言葉で見直すこと
+チャタリング（バウンシング）現象とは、タクトスイッチのような機械式スイッチにおいて、
+接点が閉じる・開く瞬間に、スイッチ内部の金属ばねの弾性やスイッチを押す力によって接点が
+微小時間のうちに何度も接触・離反を繰り返し、本来1回であるはずのON/OFFの切り替わりが、
+数msから数十ms程度の間、高速に複数回発生する現象である。
+
+図\ref{fig:chattering}に、スイッチON時の理想的な信号波形と、実際にチャタリングが発生した場合の
+信号波形を示す。理想波形ではON操作の瞬間に電圧が1回だけHIGHへ立ち上がるのに対し、
+チャタリングが発生した波形ではHIGHとLOWの間を短時間に何度も往復した後、安定した状態に落ち着く
+様子が確認できる。
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[scale=1, line cap=round]
+    % 理想波形（押下で0→1、離す動作で1→0）
+    \draw[->] (0,3) -- (10,3) node[right] {$t$};
+    \draw[->] (0,2.4) -- (0,4) node[above] {電圧};
+    \draw[thick] (0,2.7) -- (2,2.7) -- (2,3.7) -- (5,3.7) -- (5,2.7) -- (10,2.7);
+    \draw[dashed] (0,3.7) -- (-0.3,3.7) node[left] {HIGH};
+    \draw[dashed] (0,2.7) -- (-0.3,2.7) node[left] {LOW};
+    \node[align=center, font=\small] at (2,4.1) {押下};
+    \node[align=center, font=\small] at (5,4.1) {離す};
+    \node at (8,4.3) {\textbf{理想的な信号波形}};
+
+    % チャタリング波形（押下時・離す時ともに高頻度のバウンスを再現）
+    \draw[->] (0,0) -- (10,0) node[right] {$t$};
+    \draw[->] (0,-0.6) -- (0,1.6) node[above] {電圧};
+    \draw[thick]
+      (0,0.2) -- (2,0.2)
+      -- (2,1.2) -- (2.15,1.2) -- (2.15,0.2)
+      -- (2.3,0.2) -- (2.3,1.2) -- (2.45,1.2) -- (2.45,0.2)
+      -- (2.6,0.2) -- (2.6,1.2) -- (2.75,1.2) -- (2.75,0.2)
+      -- (2.9,0.2) -- (2.9,1.2) -- (5,1.2)
+      -- (5,0.2) -- (5.15,0.2) -- (5.15,1.2)
+      -- (5.3,1.2) -- (5.3,0.2) -- (5.45,0.2) -- (5.45,1.2)
+      -- (5.6,1.2) -- (5.6,0.2) -- (5.75,0.2) -- (5.75,1.2)
+      -- (5.9,1.2) -- (5.9,0.2) -- (10,0.2);
+    \draw[dashed] (0,1.2) -- (-0.3,1.2) node[left] {HIGH};
+    \draw[dashed] (0,0.2) -- (-0.3,0.2) node[left] {LOW};
+    \draw[<->] (2,-0.4) -- (2.9,-0.4) node[midway,below] {\scriptsize 0→1のバウンス};
+    \draw[<->] (5,-0.4) -- (5.9,-0.4) node[midway,below] {\scriptsize 1→0のバウンス};
+    \node at (8,1.9) {\textbf{実際の信号波形（チャタリング発生時）}};
+  \end{tikzpicture}
+  \caption{スイッチ押下（0→1）および離す動作（1→0）における理想的な信号波形と、実際にチャタリングが発生した場合の信号波形の比較（イメージ図）}
+  \label{fig:chattering}
+\end{figure}
+
+%% ============================================================
+\section{課題２：スイッチ入力とLED3個出力}\label{sec:task2}
+%% ============================================================
+
+\subsection{回路}\label{sec:task2-circuit}
+
+\subsubsection{スイッチ入力の原理}
+% TODO: 実際に採用した方式（内部プルアップ／外付けプルダウン等）に合わせて修正すること
+Arduinoのデジタル入力ピンでスイッチのON/OFF状態を読み取る場合、スイッチが開いている（OFF）
+ときにピンの電位が不定（フローティング）にならないよう、プルアップ抵抗またはプルダウン抵抗を
+用いて電位を確定させる必要がある。本実験では、Arduinoの内部プルアップ抵抗
+（\texttt{pinMode(pin, INPUT\_PULLUP)}）を利用する方法、またはスイッチと
+10\,k$\Omega$程度の外付けプルダウン抵抗を組み合わせる方法のいずれかを用いる。
+内部プルアップを使用する場合、スイッチが押されていないときはHIGH、押されるとGND側に
+接続されてLOWとなるため、論理が反転する点に注意してプログラムを作成する必要がある。
+
+\subsubsection{LED出力の原理}
+LEDは順方向にのみ電流が流れる素子であり、適切な順方向電流（一般に赤色LEDで数mA〜20mA程度）を
+流すことで発光する。Arduinoの出力ピンから直接LEDを駆動する場合、過大な電流が流れて素子や
+マイコンのピンを破損しないよう、LEDと直列に電流制限抵抗を接続する。
+
+\subsubsection{回路図}
+% TODO: 下図はドラフトです。ピン番号・抵抗値・プルアップ方式などを実際の配線に合わせて
+% \arduinoLedSwitchCircuit（プリアンブル付近で定義）を編集すること。
+% 実際に配線した写真も撮影し、下の写真用プレースホルダに追加すること。
+\begin{figure}[H]
+  \centering
+  \arduinoLedSwitchCircuit
+  \caption{課題２の回路図}
+  \label{fig:task2-circuit}
+\end{figure}
+
+% TODO: 配線した実物の回路の写真を images/ に保存して挿入する。
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.7\linewidth]{images/task2_photo.jpg}
+%   \caption{課題２：配線した回路}
+%   \label{fig:task2-photo}
+% \end{figure}
+
+\subsubsection{抵抗値の選定}
+% TODO: 実際に使用したLEDの型番・順方向電圧・電流値に置き換えて計算し直すこと
+LED用電流制限抵抗の値$R$は、オームの法則により次式で求められる。
+$$ R = \frac{V_{DD} - V_F}{I_F} $$
+ここで、$V_{DD}$はArduinoの出力電圧（5\,V）、$V_F$はLEDの順方向電圧（赤色LEDの場合、一般に
+約2.0\,V）、$I_F$は目標とする順方向電流（例えば10\,mA）である。これらの値を代入すると、
+$$ R = \frac{5.0 - 2.0}{0.010} = 300\,\Omega $$
+となる。入手性の良いE24系列の標準抵抗値から220\,$\Omega$または330\,$\Omega$を選定し、
+本実験では素子の消費電力・寿命に余裕を持たせる観点から330\,$\Omega$を採用した（LED3個分、
+計3本使用）。
+
+スイッチ入力側にプルアップ／プルダウン抵抗を外付けする場合は、一般的に10\,k$\Omega$程度が
+広く用いられる。この値は、(1) 入力ピンの電位を確実に確定できる程度に十分小さく、
+(2) スイッチが導通した際に過大な電流が流れない程度に十分大きい、という2つの条件のバランスから
+経験的に選ばれている値である。
+
+\subsection{プログラム}\label{sec:task2-program}
+
+\lstinputlisting[language=C, caption=task2.ino]{code/task2.ino}
+
+D2ピンをINPUT\_PULLUPモードで初期化することで、スイッチが押されていないときはHIGH、
+押されるとGND側に接続されてLOWとなる。\texttt{lastSwState}に前回読み取った状態を保持し、
+「HIGH→LOW」への変化を検出した瞬間にのみ\texttt{currentLed}を1つ進めることで、
+D8・D9・D10に接続した3個のLEDのうち1個だけが順番に点灯するようにしている。
+本プログラムにはチャタリング対策を一切施していないため、スイッチの機械的なバウンスにより
+1回の押下で\texttt{currentLed}が複数回進んでしまう可能性がある。この誤動作の発生率を
+課題３・４の結果と比較することが本課題の目的である。
+
+\subsection{実行結果}\label{sec:task2-result}
+
+% TODO: 実行結果を示す写真を images/ に保存して挿入する。
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.7\linewidth]{images/task2_run.jpg}
+%   \caption{課題２：実行結果}
+%   \label{fig:task2-run}
+% \end{figure}
+
+% TODO: スイッチを100回押したときにLEDの点灯が正しく移動した回数を調べ、
+% 結果を表にまとめ、成功率について考察する。
+%
+% \begin{table}[H]
+%   \centering
+%   \caption{課題２：成功率の検証結果}
+%   \label{tab:task2-success}
+%   \begin{tabular}{cc}
+%     \toprule
+%     試行回数 & 正しく移動した回数 \\
+%     \midrule
+%     100 & \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+%% ============================================================
+\section{課題３：ソフトウェアによるチャタリング対策}\label{sec:task3}
+%% ============================================================
+
+% 注：課題2の回路をそのまま利用し、プログラムのみ改良する。
+
+\subsection{原理}\label{sec:task3-theory}
+% TODO: 実際に採用した実装方法（delay版／millis版など）に合わせて内容を絞り込むこと
+ソフトウェアによるチャタリング対策（デバウンス処理）とは、スイッチの状態が変化した直後の
+一定時間（デバウンス時間、一般に10〜50\,ms程度）は入力の変化を無視し、その時間が経過した後の
+状態を「確定した状態」として扱う手法である。代表的な実装方法として、次の2つが挙げられる。
+\begin{itemize}
+  \item \textbf{delay()を用いる方法}：状態変化を検出した直後に\texttt{delay()}関数で
+        一定時間待機し、チャタリングが収まるのを待ってから状態を再確認する単純な実装。
+        実装が容易である一方、待機中は他の処理が一切実行できない（ブロッキング）という欠点がある。
+  \item \textbf{millis()を用いる方法}：状態が変化した時刻を記録しておき、\texttt{millis()}で
+        取得する現在時刻との差が一定時間を超えたときに初めて状態が確定したとみなす非ブロッキングな
+        実装。待機中も他の処理を止めずに済むため、複数の入出力を扱うプログラムに適している。
+\end{itemize}
+
+\subsection{プログラム}\label{sec:task3-program}
+
+\lstinputlisting[language=C, caption=task3.ino]{code/task3.ino}
+
+課題２のプログラムに対し、\texttt{millis()}を用いた非ブロッキング型のデバウンス処理を追加した。
+\texttt{loop()}内では、まず現在のスイッチの状態\texttt{currentSwState}を読み取り、前回の状態
+\texttt{lastSwState}と異なっていた場合に、その変化が起きた時刻を\texttt{lastDebounceTime}に
+記録する。
+\begin{center}
+\texttt{if ((millis() - lastDebounceTime) < debounceDelay) return;}
+\end{center}
+の行により、状態が変化してから\texttt{debounceDelay}（本実装では50\,ms）が経過するまでは
+以降の処理を行わずに\texttt{loop()}を抜けるため、チャタリングによる短時間の細かい変化は
+無視される。この待機時間を過ぎ、かつ「未押下（LOW以外）→押下（HIGH）」への変化があった
+場合にのみ\texttt{currentLed}を1つ進めてLEDの点灯を切り替える。
+
+\subsection{実行結果}\label{sec:task3-result}
+
+% TODO: スイッチを100回押したときにLEDの点灯が正しく移動した回数を調べ、
+% 課題2の結果と比較しながら考察する。
+%
+% \begin{table}[H]
+%   \centering
+%   \caption{課題３：成功率の検証結果}
+%   \label{tab:task3-success}
+%   \begin{tabular}{cc}
+%     \toprule
+%     試行回数 & 正しく移動した回数 \\
+%     \midrule
+%     100 & \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+%% ============================================================
+\section{課題４：ハードウェアによるチャタリング対策}\label{sec:task4}
+%% ============================================================
+
+% 注：課題2のソフトウェア（チャタリング対策なし）をそのまま利用し、回路のみ改良する。
+% 配布資料のCR積分回路（10kΩ×2、0.1μF）を参考に構成する。
+
+\subsection{回路}\label{sec:task4-circuit}
+
+\subsubsection{ハードウェアデバウンス（RC積分回路）の原理}
+% TODO: 実際に構成した回路の定数・接続に合わせて内容を修正すること
+ハードウェアによるチャタリング対策としては、抵抗とコンデンサを組み合わせたRC積分回路
+（ローパスフィルタ）を用いる方法が広く知られている。スイッチの開閉によって生じる高速な
+電圧変化（チャタリング）に対し、コンデンサの充放電に時間がかかるという特性を利用することで、
+短時間の細かい電圧変動を平滑化し、緩やかに変化する信号へと整形することができる。
+
+配布された参考回路（10\,k$\Omega$の抵抗2個と0.1\,$\mu$Fのコンデンサを組み合わせた回路）は、
+スイッチのプルアップ抵抗とチャタリング抑制用の抵抗・コンデンサを兼ねた構成になっている。
+この回路の時定数$\tau$は、コンデンサへの充放電経路となる抵抗成分（この回路では概ね
+10\,k$\Omega$程度）と静電容量0.1\,$\mu$Fの積として、
+$$ \tau = RC = 10\times10^{3} \times 0.1\times10^{-6} = 1.0\times10^{-3}\,\mathrm{s} = 1\,\mathrm{ms} $$
+程度となる。一般的なタクトスイッチのチャタリング継続時間は数ms程度であるため、この時定数は
+チャタリングの高周波成分を十分に減衰させつつ、スイッチ操作に対する応答遅れが問題にならない
+範囲に設定されていると考えられる。また、Arduinoのデジタル入力ピンは内部にヒステリシス特性
+（シュミットトリガ的な入力特性）を持つため、なまった（緩やかに変化する）入力波形からでも
+明確なHIGH/LOWの判定が可能となる。
+
+\subsubsection{回路図}
+% TODO: 下図はドラフトです。実際に構成した回路（部品定数・配線・シュミットトリガICの有無など）に
+% 合わせて \hwDebounceCircuitBasic / \hwDebounceCircuitSchmitt（プリアンブル付近で定義）を編集すること。
+図\ref{fig:task4-circuit}に、課題４で構成するハードウェアデバウンス回路を示す。(a)はプルアップ抵抗と
+RC積分回路のみによる基本構成であり、(b)はさらにシュミットトリガ入力のバッファ（例：74HC14等）を追加し、
+なまった信号を明確なHIGH/LOWへ整形する構成である。
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \hwDebounceCircuitBasic
+    \caption{RC積分回路のみ}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.48\linewidth}
+    \centering
+    \hwDebounceCircuitSchmitt
+    \caption{RC積分回路＋シュミットトリガ}
+  \end{subfigure}
+  \caption{課題４の回路図（プルアップ抵抗10\,k$\Omega$×2、コンデンサ0.1\,$\mu$F）}
+  \label{fig:task4-circuit}
+\end{figure}
+
+% TODO: 配線した実物の回路の写真を images/ に保存して挿入する。
+%
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.7\linewidth]{images/task4_photo.jpg}
+%   \caption{課題４：配線した回路}
+%   \label{fig:task4-photo}
+% \end{figure}
+
+% TODO: チャタリングを抑制する回路の動作原理を説明する。
+% 内容の目安：
+%   ・抵抗とコンデンサによる積分（時定数）でスイッチのバウンスを平滑化する原理
+%   ・時定数 τ = RC の値と、その値を選んだ理由
+
+\subsection{実行結果}\label{sec:task4-result}
+
+% TODO: スイッチを100回押したときにLEDの点灯が正しく移動した回数を調べ、
+% 課題2・課題3の結果と比較しながら考察する。
+%
+% \begin{table}[H]
+%   \centering
+%   \caption{課題４：成功率の検証結果}
+%   \label{tab:task4-success}
+%   \begin{tabular}{cc}
+%     \toprule
+%     試行回数 & 正しく移動した回数 \\
+%     \midrule
+%     100 & \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table} 
+
+\section{参考文献}\label{sec:references}
+% TODO: 実際に参照した資料に合わせて書誌情報を修正・追加すること
+\begin{enumerate}
+  \item Arduino, "Debounce," Arduino Built-in Examples,
+        \url{https://docs.arduino.cc/built-in-examples/digital/Debounce/}
+  \item Jack G. Ganssle, "A Guide to Debouncing," The Ganssle Group, 2004.
+  \item Arduino, "digitalRead() / millis() Reference,"
+        \url{https://www.arduino.cc/reference/en/}
+  \item 授業配布資料「組込みシステム(HI-4) 前期期末レポート課題」、2026年6月29日。
+\end{enumerate}
+
+\end{document}

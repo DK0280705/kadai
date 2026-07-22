@@ -296,7 +296,7 @@
 \newpage
 \thispagestyle{frontmatter}
 \pagenumbering{roman}
-\tableofcontents(
+\tableofcontents
 
 \newpage
 \pagenumbering{arabic}
@@ -321,7 +321,7 @@
 近似解を求める方法で、テーラー展開の１次近似式をもとにした方法がニュートン法（図3.2参）である。
 いま$f(x)$を点$x_{k-1}$でテーラー展開すると
 \begin{equation}
-f(x)=f(x_{k-1})+f'(x_{k-1})(x - x_{k-1})+ \frac{f^{(2)}(x_{k-1})}{2!})(x-x_{k-1})^2+\cdots
+f(x)=f(x_{k-1})+f'(x_{k-1})(x - x_{k-1})+ \frac{f^{(2)}(x_{k-1})}{2!}(x-x_{k-1})^2+\cdots
 \end{equation}
 となり、２次以降の項を無視すると
 \begin{equation}\label{eq:taylor-approx}
@@ -361,6 +361,22 @@ $h \leftarrow \frac{h}{2}$\;
 }
 \end{algorithm}
 
+\section{実装}
+\subsection{ニュートン法の実装}
+ニュートン法は、初期値$x_0$から出発し、(\ref{eq:taylor-approx})式を反復適用して収束判定値$\varepsilon$を満たすまで更新を続ける方法である。以下のコードは、Pythonでの実装である。
+
+\lstinputlisting[language=Python, caption=ニュートン法の実装]{code/newton.py}
+
+この実装では、$x_k = x_{k-1} - f(x_{k-1})/f'(x_{k-1})$による更新を、収束条件$\left|\dfrac{x_k - x_{k-1}}{x_k}\right| < \varepsilon$を満たすまで繰り返す。関数$f$とその導関数$f'$、初期値$x_0$、収束判定値$\varepsilon$を引数として与える。
+
+\subsection{2分法の実装}
+2分法は、根を含む区間$[x_0, x_0+h_0]$から出発し、区間幅$h$を半分に狭めながら根の存在する側を判定していく方法である。
+
+\lstinputlisting[language=Python, caption=2分法の実装]{code/bisection.py}
+
+この実装では、区間幅$h$が収束判定値$\varepsilon$以下になるまで、$f(x_k)f(x_k+h) < 0$ならば左端$x_k$をそのままとし、そうでなければ$x_{k+1} = x_k + h$と更新する。
+
+
 \chapter{定積分の解法}\label{chap:definite-integrals}
 \section{目標}
 次の４つの数値積分のアルゴリズムを理解し、プログラムを書いて問題解決ができる。
@@ -372,20 +388,20 @@ $h \leftarrow \frac{h}{2}$\;
 \end{itemize}
 \section{理論}
 \subsection{区分求積法による解法}
-$f(x)$を塀区分$[a, b]$で定義された有界関数とし、その定積分：
+$f(x)$を閉区間$[a, b]$で定義された有界関数とし、その定積分：
 \begin{equation}\label{eq:def-integral}
 S = \int_{a}^{b}f(x)dx
 \end{equation}
 を考える。積分区間$[a,b]$を$n$等分し、各区間を
 \begin{equation}
-x_k = a + k \dot{h}\text{、ただし、 } h = \frac{b-a}{n}
+x_k = a + k \cdot h\text{、ただし、 } h = \frac{b-a}{n}
 \end{equation}
-とする（ｈは刻み幅）。この区間ごとの面積の総和：
+とする（$h$は刻み幅）。この区間ごとの面積の総和：
 \begin{equation}\label{eq:def-int-parts}
 S_n = \sum_{k=0}^{n-1}f(x_k)h
 \end{equation}
-で近似値を求める方法がく感求積法である。
-$n$を十分大きくとると、(\ref{eq:def-int-parts})式$S_n$の近似値が(\ref{eq:def-integral})式の$S$の新地に近づく。
+で近似値を求める方法が区分求積法である。
+$n$を十分大きくとると、(\ref{eq:def-int-parts})式$S_n$の近似値が(\ref{eq:def-integral})式の$S$の真値に近づく。
 ただし、実際に計算機で行う際には$n$がある程度以上になると丸め誤差が累積するため精度には限界がある。
 
 \subsection{台形公式による解法}
@@ -396,7 +412,362 @@ S_n = \sum_{k=0}^{n-1}\frac{h}{2}(f(x_k)+f(x_{k+1}))\text{、ただし、 } x_k 
 となる。
 
 \subsection{シンプソンの公式による解法}
+シンプソンの(1/3)公式は、関数の3点を通る2次の補間多項式で近似した式を基にしており、区間$[a,b]$を$n$等分（ただし、$n$は偶数）し、
+\begin{equation}\label{eq:simpson}
+S_n = \sum_{k=0}^{\frac{n}{2}-1}\frac{h}{3}\bigl(f(x_{2k})+4f(x_{2k+1})+f(x_{2k+2})\bigr)\text{、ただし、 } x_k = a+kh = a+k\frac{b-a}{n}
+\end{equation}
+となる。定積分は小区間$[x_{2k}, x_{2k+2}]$ごとの面積$S_k'$で以下のように表せる。
+\begin{equation}\label{eq:simpson-parts}
+\int_{a}^{b}f(x)dx = \sum_{k=0}^{\frac{n}{2}-1}S_k'
+\end{equation}
+まず、区間$[x_{2k}, x_{2k+2}]$の面積$S_k'$：
+\begin{equation}\label{eq:simpson-sk}
+S_k' = \int_{x_{2k}}^{x_{2k+2}}f(x)dx
+\end{equation}
+の近似値を、関数$f(x)$の2次近似補間多項式：
+\begin{equation}\label{eq:simpson-g}
+f(x)\approx g(x) = a_0 + a_1(x-x_{2k}) + a_2(x-x_{2k})(x-x_{2k+1})
+\end{equation}
+といわれるこの$g(x)$を用いて近似することを考える。$f(x)$がこの2次近似式$g(x)$と3点$(x_{2k}, x_{2k+1}, x_{2k+2})$で$f(x)=g(x)$となるためには
+\begin{equation}
+\begin{cases}
+f(x_{2k}) = g(x_{2k}) = a_0 \\
+f(x_{2k+1}) = g(x_{2k+1}) = a_0 + a_1(x_{2k+1}-x_{2k}) = a_0 + a_1 h \\
+f(x_{2k+2}) = g(x_{2k+2}) = a_0 + a_1(x_{2k+2}-x_{2k}) \\
+\hphantom{f(x_{2k+2}) = g(x_{2k+2}) =}{}+ a_2(x_{2k+2}-x_{2k})(x_{2k+2}-x_{2k+1}) = a_0 + a_1 2h + a_2 2h^2
+\end{cases}
+\end{equation}
+となり、(\ref{eq:simpson-g})式の近似式の係数$\{a_0, a_1, a_2\}$は
+\begin{equation}\label{eq:simpson-coeffs}
+\begin{cases}
+a_0 = f(x_{2k}) \\
+a_1 = \dfrac{1}{h}\bigl(f(x_{2k+1}) - f(x_{2k})\bigr) \\
+a_2 = \dfrac{1}{2h^2}\bigl(f(x_{2k}) - 2f(x_{2k+1}) + f(x_{2k+2})\bigr)
+\end{cases}
+\end{equation}
+となる。(\ref{eq:simpson-g})式を(\ref{eq:simpson-sk})式の右辺に代入して積分すると、
+\begin{equation}
+\begin{aligned}
+S_k' &= \int_{x_{2k}}^{x_{2k+2}}f(x)dx \approx \int_{x_{2k}}^{x_{2k+2}}g(x)dx \\
+&= \frac{h}{3}\bigl(f(x_{2k})+4f(x_{2k+1})+f(x_{2k+2})\bigr)
+\end{aligned}
+\end{equation}
+となり、(\ref{eq:simpson-parts})式よりシンプソンの公式(\ref{eq:simpson})式が導かれる。
+シンプソンの公式による定積分は、2次曲線で近似した関数から求めており、一般に台形公式による定積分より近似精度がよい。
 
 \subsection{２重積分}
+長方形領域$A\{a\le x\le b,\ c\le y\le d\}$の上で定義された2変数の連続関数$f(x,y)$の2重積分：
+\begin{equation}\label{eq:double-integral}
+V = \int\!\!\int_{A} f(x,y)\,dx\,dy
+\end{equation}
+について考える。まず、$x$についての積分を1次元の積分で用いた区分求積法(\ref{eq:def-int-parts})式を適用する。$x$の積分区間$[a,b]$を$n$等分すると、
+\begin{equation}
+V \approx \int_{c}^{d}\left(\sum_{i=0}^{n-1}f(x_i,y)h_x\right)dy\text{、ただし、 } h_x = \frac{b-a}{n}
+\end{equation}
+となり、さらに$y$の積分区間$[c,d]$を$m$等分して$y$について区分求積法を適用すると、
+\begin{equation}\label{eq:double-integral-approx}
+V = \int\!\!\int_{A} f(x,y)\,dx\,dy \approx \sum_{i=0}^{n-1}\sum_{j=0}^{m-1}f(x_i,y_j)h_x h_y
+\end{equation}
+ただし、
+\begin{equation}
+h_x = \frac{b-a}{n}\text{、}\quad h_y = \frac{d-c}{m}
+\end{equation}
+となる。この方法は、1次元の積分方法である区分求積法を2次元に拡張した方法である。
+この区分求積法を用いた2重積分は、各小区間$\{x_i\le x\le x_i+h_x,\ y_j\le y\le y_j+h_y\}$ごとの体積を底面積$h_xh_y$、高さ$f(x_i,y_j)$の立方体$V_{ij}$：
+\begin{equation}
+V_{ij} = f(x_i,y_j)h_x h_y
+\end{equation}
+で近似し、全ての領域においてこの立方体の体積の総和で近似することで、2重積分の近似式(\ref{eq:double-integral-approx})式：
+\begin{equation}
+V \approx \sum_{i=0}^{n-1}\sum_{j=0}^{m-1}V_{ij} = \sum_{i=0}^{n-1}\sum_{j=0}^{m-1}f(x_i,y_j)h_x h_y
+\end{equation}
+が得られる。
+
+\newpage
+%% ============================================================
+%% 9d. IMPLEMENTATION (実装)
+%% ============================================================
+\section{実装}
+
+\newpage
+\subsection{数値積分（区分求積法・台形公式・シンプソンの公式）の実装}
+区分求積法、台形公式、シンプソンの公式は、いずれも積分区間$[a,b]$を$n$等分し、関数値の重み付き総和として定積分を近似する点で共通している。
+
+\lstinputlisting[language=Python, caption=数値積分の実装]{code/integrals.py}
+
+\texttt{rectangle\_rule}は(\ref{eq:def-int-parts})式、\texttt{trapezoidal\_rule}は台形公式、\texttt{simpson\_rule}は(\ref{eq:simpson})式をそれぞれ実装したものである。シンプソンの公式では$n$を偶数に限定している。
+
+\newpage
+\subsection{2重積分の実装}
+2重積分は、区分求積法を$x$方向・$y$方向の両方に適用し、(\ref{eq:double-integral-approx})式の2重和をNumPyの\texttt{meshgrid}を用いて計算する。
+
+\lstinputlisting[language=Python, caption=2重積分の実装]{code/double_integral.py}
+
+\newpage
+\subsection{GPU（コンピュートシェーダー）による2重積分の高速化}\label{sec:gpu-double-integral}
+(\ref{eq:double-integral-approx})式の2重和は、格子点$(x_i, y_j)$ごとの評価が互いに独立であるため、GPU上で大規模に並列化できる。そこで、最適化の一例として、応用課題2.6の被積分関数$f(x,y)=x^2y^2$に特化したGLSLコンピュートシェーダーを\texttt{moderngl}経由で実行し、CPU（NumPy）実装との速度比較を行った。
+
+シェーダー側では、各スレッドが1つの格子点$(i,j)$の値$f(x_i,y_j)h_xh_y$を計算し、ワークグループ内で共有メモリを用いた並列リダクション（総和）を行う。ワークグループごとの部分和のみをCPU側に転送し、最後にその小さな配列（ワークグループ数個）をNumPyで合計することで、$n\times m$個の値をCPUへ転送するコストを避けている。
+
+\lstinputlisting[language=Python, caption=GPUコンピュートシェーダーによる2重積分の実装]{code/double_integral_gpu.py}
+
+CPU実装（\texttt{double\_integral\_rectangle}）は任意の関数$f$を受け取れる汎用実装であるのに対し、この GPU 実装はシェーダーソース中に$f(x,y)=x^2y^2$を直接埋め込んでおり、応用課題2.6専用の最適化実装である点に注意する。
+課題2.4、応用課題2.5で用いるCR回路・RLC回路の過渡電流$i(t)$を、それぞれ(4.16)式・(4.17)式の通りに実装する。
+
+\lstinputlisting[language=Python, caption=CR回路・RLC回路の電流関数の実装]{code/circuits.py}
+
+\newpage
+%% ============================================================
+%% 9e. EXERCISES (演習課題)
+%% ============================================================
+\section{演習課題}
+
+\subsection*{課題 2.1}
+$\sqrt{7}$の近似値をニュートン法で求めよ。(解：$\sqrt{7} = 2.64575$)
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> f  = lambda x: x**2 - 7
+>>> df = lambda x: 2*x
+>>> x, history = newton_method(f, df, x0=3.0, epsilon=1e-6)
+>>> x
+2.6457513110645907
+\end{lstlisting}
+解析解 $\sqrt{7} = 2.64575$ と一致。
+
+初期値 $x_0 = 3.0$ から出発し、4回の反復で収束判定値 $\varepsilon = 10^{-6}$ を満たした。図\ref{fig:task2-1}左に反復回数に対する$x_k$の推移、右に真値との誤差 $|x_k - \sqrt{7}|$ の推移（対数軸）を示す。ニュートン法は2次収束するため、誤差が反復ごとに急激に減少していることが確認できる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.1_—_Newton_sqrt7.pdf}
+    \caption{課題2.1 — ニュートン法による$\sqrt{7}$の収束過程}
+    \label{fig:task2-1}
+\end{figure}
+
+\subsection*{課題 2.2}
+$\sqrt{7}$の近似値を2分法で求めよ。(解：$\sqrt{7} = 2.64575$)
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> f = lambda x: x**2 - 7
+>>> x, history = bisection_method(f, x0=2.0, h0=1.0, epsilon=1e-6)
+>>> x
+2.6457509994506836
+\end{lstlisting}
+解析解 $\sqrt{7} = 2.64575$ と一致（$\varepsilon = 10^{-6}$の範囲内）。
+
+根が含まれる区間$[2, 3]$（$f(2) = -3 < 0$、$f(3) = 2 > 0$）を初期区間とし、20回の反復で区間幅が$\varepsilon = 10^{-6}$を下回った。図\ref{fig:task2-2}に収束過程を示す。2分法はニュートン法に比べて反復回数が多いものの、導関数を必要とせず、各反復で誤差がほぼ半分ずつ単調に減少する1次収束であることがわかる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.2_—_Bisection_sqrt7.pdf}
+    \caption{課題2.2 — 2分法による$\sqrt{7}$の収束過程}
+    \label{fig:task2-2}
+\end{figure}
+
+\subsection*{課題 2.3}
+次の積分を区分求積法、台形公式、シンプソンの公式の各手法を使って計算し、解析解$\pi$と比較し各手法の精度の違いを考察せよ。ただし、分割数$n$は適当に定めよ。
+\begin{equation}
+S = \int_{0}^{1}\frac{4}{1+x^2}dx
+\end{equation}
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> g = lambda x: 4 / (1 + x**2)
+>>> rectangle_rule(g, 0, 1, 10),   trapezoidal_rule(g, 0, 1, 10),   simpson_rule(g, 0, 1, 10)
+(3.239925948, 3.139925948, 3.141592502)
+>>> rectangle_rule(g, 0, 1, 100),  trapezoidal_rule(g, 0, 1, 100),  simpson_rule(g, 0, 1, 100)
+(3.151576269, 3.141576269, 3.141592654)
+>>> rectangle_rule(g, 0, 1, 1000), trapezoidal_rule(g, 0, 1, 1000), simpson_rule(g, 0, 1, 1000)
+(3.142592448, 3.141592448, 3.141592654)
+\end{lstlisting}
+$S = \int_0^1 4/(1+x^2)dx = 4\arctan(1) = \pi = 3.141592654\ldots$ が解析解である。
+
+表\ref{tab:task2-3}に分割数$n$ごとの各手法の近似値と誤差を示す。区分求積法は誤差が$n$に反比例して減少する1次精度、台形公式は$n^2$に反比例して減少する2次精度、シンプソンの公式は$n^4$に反比例して減少する4次精度であり、同じ分割数でも精度が大きく異なることがわかる。特にシンプソンの公式は$n=100$の時点で倍精度浮動小数点数の限界近くまで一致しており、非常に高精度であることが確認できる。
+
+\begin{table}[H]
+\centering
+\caption{課題2.3 — 各手法の近似値と誤差}
+\label{tab:task2-3}
+\begin{tabular}{rrrr}
+\toprule
+$n$ & 区分求積法（誤差） & 台形公式（誤差） & シンプソンの公式（誤差） \\
+\midrule
+10   & 3.239926 ($9.83\times10^{-2}$) & 3.139926 ($1.67\times10^{-3}$) & 3.141593 ($3.97\times10^{-8}$) \\
+100  & 3.151576 ($9.98\times10^{-3}$) & 3.141576 ($1.67\times10^{-5}$) & 3.141593 ($3.91\times10^{-14}$) \\
+1000 & 3.142592 ($1.00\times10^{-3}$) & 3.141592 ($1.67\times10^{-7}$) & 3.141593 ($0.00$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+図\ref{fig:task2-3}に分割数$n$に対する誤差$|S_n - \pi|$の両対数プロットを示す。3手法の傾きの違いから、それぞれの収束次数の違いが明確に読み取れる。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Task_2.3_—_Integral_error_comparison.pdf}
+    \caption{課題2.3 — 分割数$n$に対する誤差の比較（両対数）}
+    \label{fig:task2-3}
+\end{figure}
+
+\subsection*{課題 2.4}
+$C-R$の直列回路(図4.5)に突然直流電圧$E$を加えたとき、加電の瞬時から測って$t$の時刻の電流$i(t)$は次の式で与えられる。
+\begin{equation}
+i(t) = \frac{E}{R}e^{-\frac{1}{CR}t}\ [A]
+\end{equation}
+電流$i$がその最大値$i_m = \frac{E}{R}$の$\frac{1}{2}$になる時間$T$(図4.6)を、ニュートン法で求めよ。ただし、$E=1[V]$、$R=100[k\Omega]$、$C=80[\mu F]$とする。(解：$T=5.5452\,sec$)
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> E, R, C = 1.0, 100e3, 80e-6
+>>> im = E / R
+>>> f  = lambda t: i_cr(t, E, R, C) - im / 2
+>>> df = lambda t: -(1 / (C * R)) * i_cr(t, E, R, C)
+>>> T, history = newton_method(f, df, x0=1.0, epsilon=1e-6)
+>>> T
+5.545177444479562
+\end{lstlisting}
+解析解 $T = 5.5452\,\mathrm{sec}$ と一致。実際、$i(T)=i_m/2$は$e^{-T/(CR)}=1/2$と同値であるから、$T = CR\ln 2 = 100\times10^3\times80\times10^{-6}\times\ln 2 = 5.5452$として解析的にも検証できる。
+
+図\ref{fig:task2-4-curve}に電流$i(t)$の過渡応答曲線と時間$T$の位置を示す。初期値$t_0=1.0$から出発し、5回の反復で収束した（図\ref{fig:task2-4-newton}）。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/Task_2.4_—_CR_circuit_current.pdf}
+    \caption{課題2.4 — CR回路の過渡電流と$T$}
+    \label{fig:task2-4-curve}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.4_—_Newton_CR_circuit.pdf}
+    \caption{課題2.4 — ニュートン法による$T$の収束過程}
+    \label{fig:task2-4-newton}
+\end{figure}
+
+\subsection*{応用課題 2.5}
+$R-L-C$の直列回路(図4.7)に直流電圧$E$を加える。$R^2 = \frac{4L}{C}$の関係があるとき、流れる電流$i(t)$は次式で与えられる(図4.8)。
+\begin{equation}
+i(t) = \frac{E}{L}te^{-\frac{R}{2L}t}\ [A]
+\end{equation}
+電流$i$がその最大値$i_m = \frac{2E}{eR}$の$\frac{1}{2}$になる時間$T_1, T_2$を、2分法で求めよ。ただし、$E=1[V]$、$R=1095[\Omega]$、$L=0.3[H]$、$C=1[\mu F]$とする。(解：$T_1=1.27102\times10^{-4}\,sec$、$T_2=1.46759\times10^{-3}\,sec$)
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> E, R, L = 1.0, 1095.0, 0.3
+>>> t_peak = 2 * L / R                      # i(t) が最大となる時刻
+>>> im = 2 * E / (np.e * R)
+>>> f  = lambda t: i_rlc(t, E, R, L) - im / 2
+>>> T1, hist1 = bisection_method(f, x0=1e-8, h0=t_peak - 1e-8, epsilon=1e-9)
+>>> T2, hist2 = bisection_method(f, x0=t_peak, h0=0.01 - t_peak, epsilon=1e-9)
+>>> T1, T2
+(0.00012710137452151673, 0.001467587253818773)
+\end{lstlisting}
+解析解 $T_1=1.27102\times10^{-4}\,sec$、$T_2=1.46759\times10^{-3}\,sec$ とそれぞれ一致。
+
+電流$i(t)$は$t_{\mathrm{peak}}=2L/R$で最大値$i_m$をとった後、単調に減少していく非単調関数であるため、$i(t)=i_m/2$を満たす時刻は$T_1 < t_{\mathrm{peak}}$と$T_2 > t_{\mathrm{peak}}$の2つ存在する。それぞれ区間$(0,\,t_{\mathrm{peak}})$と$(t_{\mathrm{peak}},\,0.01)$を初期区間として2分法を適用し、$T_1$は20回、$T_2$は24回の反復で収束判定値$\varepsilon=10^{-9}$を満たした。図\ref{fig:task2-5-curve}に電流波形と$T_1, T_2$の位置、図\ref{fig:task2-5-t1}・\ref{fig:task2-5-t2}にそれぞれの収束過程を示す。
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/Task_2.5_—_RLC_circuit_current.pdf}
+    \caption{応用課題2.5 — RLC回路の過渡電流と$T_1, T_2$}
+    \label{fig:task2-5-curve}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.5_—_Bisection_RLC_T1.pdf}
+    \caption{応用課題2.5 — 2分法による$T_1$の収束過程}
+    \label{fig:task2-5-t1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.5_—_Bisection_RLC_T2.pdf}
+    \caption{応用課題2.5 — 2分法による$T_2$の収束過程}
+    \label{fig:task2-5-t2}
+\end{figure}
+
+\subsection*{応用課題 2.6}
+曲面$z=x^2y^2$と平面$x=0$、$y=0$、$z=0$、$x=a$、$y=b$で囲まれた体積$V$
+\begin{equation}
+V = \int_{0}^{b}\int_{0}^{a}x^2y^2\,dx\,dy
+\end{equation}
+を区分求積法で計算せよ。ただし、$a=10$、$b=20$として分割数$n,m$は適当に定めよ。(解：$V=888889$)
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> f = lambda x, y: x**2 * y**2
+>>> double_integral_rectangle(f, 0, 10, 1000, 0, 20, 1000)
+886225.1098...
+>>> double_integral_rectangle(f, 0, 10, 8000, 0, 20, 8000)
+888555.6006...
+\end{lstlisting}
+解析解 $V = \dfrac{a^3}{3}\cdot\dfrac{b^3}{3} = \dfrac{1000}{3}\cdot\dfrac{8000}{3} = \dfrac{8{,}000{,}000}{9} = 888888.89\ldots \approx 888889$ に近づいていく。
+
+表\ref{tab:task2-6}および図\ref{fig:task2-6}に分割数$n=m$を増やしたときの近似値$V_{n,m}$の推移を示す。区分求積法は誤差が分割数に反比例する1次精度の手法であるため、桁数の一致する精度まで真値へ収束させるには非常に大きな分割数が必要であり、$n=m=8000$でも誤差はおよそ$333$残っている。これは課題2.3で確認した区分求積法の収束の遅さが2次元に拡張しても同様に現れることを示している。
+
+\begin{table}[H]
+\centering
+\caption{応用課題2.6 — 分割数$n=m$に対する近似値$V_{n,m}$}
+\label{tab:task2-6}
+\begin{tabular}{rrr}
+\toprule
+$n=m$ & $V_{n,m}$ & 誤差 \\
+\midrule
+100  & 862509.78 & 26379.11 \\
+1000 & 886225.11 & 2663.78 \\
+4000 & 888222.40 & 666.49 \\
+8000 & 888555.60 & 333.29 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/Task_2.6_—_Double_integral_convergence.pdf}
+    \caption{応用課題2.6 — 分割数$n=m$に対する$V_{n,m}$の収束}
+    \label{fig:task2-6}
+\end{figure}
+
+\bigskip\noindent\textbf{GPU（コンピュートシェーダー）による高速化}\medskip
+
+\noindent
+分割数$n=m$を大きくするほど区分求積法の精度は向上するが、CPU実装では計算時間が$n^2$（格子点数）に比例して増大する。そこで\ref{sec:gpu-double-integral}節で実装したGPUコンピュートシェーダー版と比較した。
+
+\bigskip
+\begin{lstlisting}[language=Python, numbers=none]
+>>> ctx = create_gpu_context()
+>>> double_integral_rectangle_gpu(0, 10, 8000, 0, 20, 8000, ctx=ctx)
+888555.98...
+\end{lstlisting}
+
+GPU版もCPU版と同じ格子点・同じ区分求積法を計算しており、近似値の差（$10^{-1}$未満）はGPU側の総和を単精度float（float32）で行っていることによる丸め誤差である。
+
+表\ref{tab:task2-6-gpu}および図\ref{fig:task2-6-gpu}に、分割数$n=m$を$500$から$16000$まで変化させたときのCPU・GPUそれぞれの実行時間と速度比（CPU時間 / GPU時間）を示す。GPU版はワークグループ内リダクションにより転送データ量を$1/256$（ワークグループサイズ）に削減しているため、$n=m$が大きくなるほどCPU実装との差が顕著になり、$n=m=16000$（格子点数 $2.56\times10^8$）では約$59$倍の高速化が得られた。一方、$n=m=500$程度の小さな格子では、GPUドライバの初期化やシェーダー実行のオーバーヘッドの割合が相対的に大きいため、速度比は約$5$倍にとどまっている。この結果は、応用課題2.6のように誤差を小さくするために分割数を非常に大きくとる必要がある場合、GPUによる並列化が有効な最適化手段であることを示している。
+
+\begin{table}[H]
+\centering
+\caption{応用課題2.6 — CPU（NumPy）とGPU（コンピュートシェーダー）の実行時間比較}
+\label{tab:task2-6-gpu}
+\begin{tabular}{rrrr}
+\toprule
+$n=m$ & CPU時間 [ms] & GPU時間 [ms] & 速度比 \\
+\midrule
+500   & 3.46    & 0.94  & 3.68  \\
+1000  & 5.21    & 0.88  & 5.94  \\
+2000  & 20.69   & 1.37  & 15.08 \\
+4000  & 78.14   & 2.26  & 34.63 \\
+8000  & 284.11  & 5.20  & 54.61 \\
+16000 & 1077.46 & 18.37 & 58.65 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/Task_2.6_—_GPU_vs_CPU_benchmark.pdf}
+    \caption{応用課題2.6 — CPUとGPUの実行時間（左）と速度比（右）}
+    \label{fig:task2-6-gpu}
+\end{figure}
 
 \end{document}
